@@ -1,0 +1,50 @@
+{
+  "name": "InfraDigital - Gestión Empresarial MiPyMEs",
+  "short_name": "InfraDigital",
+  "description": "Plataforma integral de gestión empresarial para micro, pequeñas y medianas empresas colombianas. Inventario, facturación, CRM y analíticas en tiempo real.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1e40af",
+  "background_color": "#f0f4f8",
+  "lang": "es-CO",
+  "scope": "/",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Panel de Control",
+      "short_name": "Dashboard",
+      "description": "Ver panel de control y analíticas",
+      "url": "/dashboard",
+      "icons": []
+    },
+    {
+      "name": "Nueva Factura",
+      "short_name": "Facturar",
+      "description": "Crear una nueva factura",
+      "url": "/invoices/new",
+      "icons": []
+    },
+    {
+      "name": "Inventario",
+      "short_name": "Inventario",
+      "description": "Gestionar inventario de productos",
+      "url": "/inventory",
+      "icons": []
+    }
+  ]
+}

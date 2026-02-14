@@ -1,0 +1,319 @@
+/* ============================================
+   InfraDigital - ClientDetail Styles
+   Modulo CRM: Detalle de Cliente
+   ============================================ */
+
+.client-detail {
+  animation: fadeIn var(--transition-base) ease;
+}
+
+/* --- Header --- */
+.client-detail__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.client-detail__header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.client-detail__back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.client-detail__back-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+  background-color: var(--primary-50);
+}
+
+.client-detail__title-area h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.client-detail__nit-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.client-detail__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+/* --- Type Badge (reuse from list) --- */
+.client-detail__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.client-detail__type-badge--natural {
+  background-color: var(--info-light);
+  color: var(--info);
+  border: 1px solid var(--info-border);
+}
+
+.client-detail__type-badge--juridica {
+  background-color: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+/* --- Info Card --- */
+.client-detail__info-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.client-detail__info-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-5) 0;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.client-detail__info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5) var(--space-8);
+}
+
+.client-detail__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.client-detail__info-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.client-detail__info-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.client-detail__info-value--empty {
+  color: var(--text-light);
+  font-style: italic;
+  font-weight: var(--font-weight-normal);
+}
+
+.client-detail__info-value a {
+  color: var(--primary-light);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.client-detail__info-value a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* --- Purchase Summary --- */
+.client-detail__purchase-summary {
+  margin-bottom: var(--space-6);
+}
+
+.client-detail__purchase-summary-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4) 0;
+}
+
+.client-detail__purchase-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+/* --- Purchase History --- */
+.client-detail__history {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.client-detail__history-header {
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.client-detail__history-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.client-detail__history-pagination {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-light);
+}
+
+/* --- Invoice Status Badge --- */
+.client-detail__invoice-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* --- Empty Purchases --- */
+.client-detail__empty-purchases {
+  text-align: center;
+  padding: var(--space-10) var(--space-4);
+}
+
+.client-detail__empty-purchases-icon {
+  color: var(--text-light);
+  margin-bottom: var(--space-4);
+}
+
+.client-detail__empty-purchases-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.client-detail__empty-purchases-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+
+/* --- Delete Modal --- */
+.client-detail__delete-message {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.client-detail__delete-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.client-detail__delete-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* --- Notes block --- */
+.client-detail__info-value--notes {
+  white-space: pre-wrap;
+  background-color: var(--bg-primary);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .client-detail__purchase-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .client-detail__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .client-detail__header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .client-detail__info-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .client-detail__purchase-stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .client-detail__info-card {
+    padding: var(--space-4);
+  }
+
+  .client-detail__history-header {
+    padding: var(--space-4);
+  }
+
+  .client-detail__title-area h2 {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .client-detail__header-left {
+    gap: var(--space-3);
+  }
+
+  .client-detail__header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

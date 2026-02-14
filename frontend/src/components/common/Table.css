@@ -1,0 +1,83 @@
+﻿/* ============================================
+   Table - Componente de tabla reutilizable
+   ============================================ */
+
+.table-wrapper {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-component {
+  min-width: 600px;
+}
+
+/* --- Header --- */
+.table-component__th {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition-fast);
+}
+
+.table-component__th:hover {
+  background-color: var(--border-light);
+}
+
+.table-component__th-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.table-component__sort-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+.table-component__sort-inactive {
+  opacity: 0.3;
+}
+
+/* --- Loading State --- */
+.table-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-4);
+}
+
+/* --- Empty State --- */
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-4);
+  text-align: center;
+}
+
+.table-empty__icon {
+  color: var(--text-light);
+  margin-bottom: var(--space-4);
+}
+
+.table-empty__message {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .table-scroll {
+    margin: 0 -1px;
+  }
+}

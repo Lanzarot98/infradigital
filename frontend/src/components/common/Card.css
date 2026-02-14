@@ -1,0 +1,74 @@
+﻿/* ============================================
+   Card - Componente de tarjeta reutilizable
+   ============================================ */
+
+.card-component {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.card-component:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* --- Header --- */
+.card-component__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) 0;
+}
+
+.card-component__header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-component__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.card-component__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: var(--space-1) 0 0;
+  line-height: 1.5;
+}
+
+.card-component__header-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* --- Body --- */
+.card-component__body {
+  padding: var(--space-5) var(--space-6);
+}
+
+.card-component__header + .card-component__body {
+  padding-top: var(--space-4);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .card-component__header {
+    padding: var(--space-4) var(--space-4) 0;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .card-component__body {
+    padding: var(--space-4);
+  }
+}

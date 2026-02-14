@@ -1,0 +1,356 @@
+/* ============================================
+   InfraDigital - Página de Login
+   ============================================ */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #3b82f6 70%, #60a5fa 100%);
+  padding: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Formas decorativas de fondo --- */
+.login-page__bg-shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.login-page__shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.07;
+  background: #ffffff;
+}
+
+.login-page__shape--1 {
+  width: 500px;
+  height: 500px;
+  top: -120px;
+  right: -80px;
+  animation: authFloat 20s ease-in-out infinite;
+}
+
+.login-page__shape--2 {
+  width: 350px;
+  height: 350px;
+  bottom: -60px;
+  left: -100px;
+  animation: authFloat 25s ease-in-out infinite reverse;
+}
+
+.login-page__shape--3 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 15%;
+  animation: authFloat 18s ease-in-out infinite 3s;
+}
+
+/* --- Contenedor principal --- */
+.login-container {
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Tarjeta de login --- */
+.login-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), 0 0 80px rgba(0, 0, 0, 0.12);
+  padding: var(--space-10);
+  animation: authSlideUp 0.5s ease;
+}
+
+/* --- Cabecera con logo --- */
+.login-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.login-logo-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.35);
+}
+
+.login-logo-icon span {
+  color: var(--text-white);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  letter-spacing: 1px;
+}
+
+.login-brand {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* --- Alerta de error --- */
+.login-alert {
+  margin-bottom: var(--space-4);
+}
+
+/* --- Formulario --- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* --- Pie de la tarjeta --- */
+.login-footer {
+  text-align: center;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-light);
+}
+
+.login-footer p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* ============================================
+   Estilos compartidos de autenticación (auth-*)
+   Usados por Login y Register
+   ============================================ */
+
+/* --- Grupo de campo --- */
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.auth-form-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+/* --- Input con icono --- */
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-light);
+  pointer-events: none;
+  transition: color var(--transition-fast);
+  z-index: 1;
+}
+
+.auth-form-input {
+  width: 100%;
+  padding: 12px 14px 12px 44px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  transition: all var(--transition-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.auth-form-input::placeholder {
+  color: var(--text-light);
+}
+
+.auth-form-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.auth-input-wrapper:focus-within .auth-input-icon {
+  color: var(--primary-light);
+}
+
+.auth-form-input:disabled {
+  background: var(--border-light);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.auth-form-input--error {
+  border-color: var(--danger);
+}
+
+.auth-form-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+/* --- Error de campo --- */
+.auth-field-error {
+  font-size: var(--font-size-xs);
+  color: var(--danger);
+  margin-top: 2px;
+}
+
+/* --- Botón de envío --- */
+.auth-submit-btn {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--text-white);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: var(--space-2);
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+}
+
+.auth-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-btn-content,
+.auth-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+/* --- Spinner --- */
+.auth-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: authSpin 0.7s linear infinite;
+}
+
+/* --- Enlace --- */
+.auth-link {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+  transition: color var(--transition-fast);
+}
+
+.auth-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* --- Copyright --- */
+.auth-copyright {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-6);
+}
+
+/* ============================================
+   Animaciones
+   ============================================ */
+
+@keyframes authSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes authSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes authFloat {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(15px, -20px);
+  }
+  50% {
+    transform: translate(-10px, 15px);
+  }
+  75% {
+    transform: translate(20px, 10px);
+  }
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+
+  .login-logo-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .login-brand {
+    font-size: var(--font-size-xl);
+  }
+
+  .login-subtitle {
+    font-size: var(--font-size-xs);
+  }
+}

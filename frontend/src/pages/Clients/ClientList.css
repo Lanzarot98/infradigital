@@ -1,0 +1,335 @@
+/* ============================================
+   InfraDigital - ClientList Styles
+   Modulo CRM: Listado de Clientes
+   ============================================ */
+
+/* --- Page Header --- */
+.client-list {
+  animation: fadeIn var(--transition-base) ease;
+}
+
+.client-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.client-list__header h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* --- Stats Row --- */
+.client-list__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* --- Toolbar: search + filters --- */
+.client-list__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.client-list__search {
+  flex: 1;
+  min-width: 240px;
+}
+
+.client-list__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.client-list__filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.client-list__filter-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+  background-color: var(--primary-50);
+}
+
+.client-list__filter-btn--active {
+  background-color: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
+}
+
+.client-list__filter-btn--active:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: var(--text-white);
+}
+
+/* --- Table Container --- */
+.client-list__table-container {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+/* --- Type Badge --- */
+.client-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.client-type-badge--natural {
+  background-color: var(--info-light);
+  color: var(--info);
+  border: 1px solid var(--info-border);
+}
+
+.client-type-badge--juridica {
+  background-color: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+/* --- Actions Column --- */
+.client-list__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.client-list__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
+.client-list__action-btn:hover {
+  background-color: var(--bg-primary);
+}
+
+.client-list__action-btn--view:hover {
+  color: var(--primary);
+  background-color: var(--primary-50);
+}
+
+.client-list__action-btn--edit:hover {
+  color: var(--accent-dark);
+  background-color: var(--warning-light);
+}
+
+.client-list__action-btn--delete:hover {
+  color: var(--danger);
+  background-color: var(--danger-light);
+}
+
+/* --- Pagination wrapper --- */
+.client-list__pagination {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-light);
+}
+
+/* --- Mobile Cards View --- */
+.client-list__cards {
+  display: none;
+}
+
+.client-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  padding: var(--space-4);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.client-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-200);
+}
+
+.client-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.client-card__name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.client-card__nit {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.client-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.client-card__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.client-card__row svg {
+  flex-shrink: 0;
+  color: var(--text-light);
+}
+
+.client-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-light);
+}
+
+/* --- Delete Modal --- */
+.client-delete-modal__message {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.client-delete-modal__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.client-delete-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* --- Empty State --- */
+.client-list__empty {
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+}
+
+.client-list__empty-icon {
+  color: var(--text-light);
+  margin-bottom: var(--space-4);
+}
+
+.client-list__empty-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.client-list__empty-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .client-list__stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .client-list__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .client-list__stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .client-list__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .client-list__search {
+    min-width: unset;
+  }
+
+  .client-list__filters {
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide table, show cards on mobile */
+  .client-list__table-container {
+    display: none;
+  }
+
+  .client-list__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .client-list__header h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .client-card {
+    padding: var(--space-3);
+  }
+}

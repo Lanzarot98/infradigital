@@ -1,0 +1,227 @@
+/* ============================================
+   InfraDigital - ClientForm Styles
+   Modulo CRM: Formulario de Cliente
+   ============================================ */
+
+.client-form {
+  animation: fadeIn var(--transition-base) ease;
+  max-width: 900px;
+}
+
+/* --- Header --- */
+.client-form__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.client-form__back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.client-form__back-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+  background-color: var(--primary-50);
+}
+
+.client-form__header-text h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.client-form__header-text p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: var(--space-1) 0 0 0;
+}
+
+/* --- Form Card --- */
+.client-form__card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  padding: var(--space-8);
+}
+
+/* --- Form Grid --- */
+.client-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5) var(--space-6);
+}
+
+.client-form__field--full {
+  grid-column: 1 / -1;
+}
+
+/* --- Form Field --- */
+.client-form__label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.client-form__required {
+  color: var(--danger);
+  margin-left: 2px;
+}
+
+.client-form__input,
+.client-form__select,
+.client-form__textarea {
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.625rem 0.875rem;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.client-form__input:focus,
+.client-form__select:focus,
+.client-form__textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.client-form__input::placeholder,
+.client-form__textarea::placeholder {
+  color: var(--text-light);
+}
+
+.client-form__input--error,
+.client-form__select--error {
+  border-color: var(--danger);
+}
+
+.client-form__input--error:focus,
+.client-form__select--error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.client-form__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8.825L1.175 4 2.238 2.938 6 6.7 9.763 2.937 10.825 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+.client-form__textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.client-form__error {
+  font-size: var(--font-size-xs);
+  color: var(--danger);
+  margin-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.client-form__hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+  margin-top: var(--space-1);
+}
+
+/* --- Divider --- */
+.client-form__divider {
+  grid-column: 1 / -1;
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: var(--space-2) 0;
+}
+
+/* --- Section Title --- */
+.client-form__section-title {
+  grid-column: 1 / -1;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-light);
+  margin: 0;
+}
+
+/* --- Actions --- */
+.client-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-light);
+}
+
+.client-form__submit-btn {
+  min-width: 160px;
+}
+
+/* --- Loading overlay on card --- */
+.client-form__card--loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .client-form__card {
+    padding: var(--space-5);
+  }
+
+  .client-form__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .client-form__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .client-form__submit-btn {
+    min-width: unset;
+  }
+
+  .client-form__header-text h2 {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .client-form__card {
+    padding: var(--space-4);
+  }
+
+  .client-form__header {
+    gap: var(--space-3);
+  }
+}

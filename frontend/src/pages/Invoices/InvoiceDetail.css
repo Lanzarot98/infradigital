@@ -1,0 +1,414 @@
+/* ============================================
+   InvoiceDetail - Pagina de detalle de factura
+   ============================================ */
+
+.invoice-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* --- Encabezado --- */
+.invoice-detail-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.invoice-detail-page__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast);
+  align-self: flex-start;
+}
+
+.invoice-detail-page__back-btn:hover {
+  color: var(--primary);
+}
+
+.invoice-detail-page__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.invoice-detail-page__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.invoice-detail-page__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.invoice-detail-page__date {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.invoice-detail-page__status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.invoice-detail-page__header-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.invoice-detail-page__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  white-space: nowrap;
+}
+
+.invoice-detail-page__action-btn--primary {
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.invoice-detail-page__action-btn--primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.invoice-detail-page__action-btn--secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.invoice-detail-page__action-btn--secondary:hover {
+  background: var(--bg-primary);
+}
+
+/* --- Contenido principal --- */
+.invoice-detail-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* --- Card del cliente --- */
+.invoice-detail-page__client-card {
+  overflow: visible;
+}
+
+.invoice-detail-page__client {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.invoice-detail-page__client-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--primary-50);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.invoice-detail-page__client-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2);
+}
+
+.invoice-detail-page__client-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+}
+
+.invoice-detail-page__client-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* --- Tabla de items --- */
+.invoice-detail-page__items-card {
+  overflow: visible;
+}
+
+.invoice-detail-page__items-wrapper {
+  overflow-x: auto;
+}
+
+.invoice-detail-page__items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-detail-page__th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-primary);
+}
+
+.invoice-detail-page__th--right {
+  text-align: right;
+}
+
+.invoice-detail-page__td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-light);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.invoice-detail-page__td--right {
+  text-align: right;
+}
+
+.invoice-detail-page__td--center {
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.invoice-detail-page__product-name {
+  font-weight: var(--font-weight-medium);
+}
+
+/* --- Totales --- */
+.invoice-detail-page__totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 320px;
+  margin-left: auto;
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+
+.invoice-detail-page__totals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.invoice-detail-page__totals-row--total {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  padding-top: var(--space-2);
+}
+
+.invoice-detail-page__totals-divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-1) 0;
+}
+
+/* --- Info adicional --- */
+.invoice-detail-page__extra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.invoice-detail-page__extra-item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  color: var(--text-secondary);
+}
+
+.invoice-detail-page__extra-item strong {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.invoice-detail-page__extra-item p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height);
+}
+
+/* --- Modal de estado --- */
+.invoice-detail-page__status-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.invoice-detail-page__status-current {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.invoice-detail-page__status-badge-inline {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-left: var(--space-2);
+}
+
+.invoice-detail-page__status-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.invoice-detail-page__status-select {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  font-family: var(--font-family);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.invoice-detail-page__status-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.invoice-detail-page__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.invoice-detail-page__modal-btn {
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.invoice-detail-page__modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.invoice-detail-page__modal-btn--cancel {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.invoice-detail-page__modal-btn--cancel:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.invoice-detail-page__modal-btn--primary {
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.invoice-detail-page__modal-btn--primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .invoice-detail-page__header-row {
+    flex-direction: column;
+  }
+
+  .invoice-detail-page__header-actions {
+    width: 100%;
+  }
+
+  .invoice-detail-page__action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .invoice-detail-page__client {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .invoice-detail-page__client-fields {
+    justify-content: center;
+  }
+
+  .invoice-detail-page__totals {
+    max-width: 100%;
+  }
+}
+
+/* --- Estilos para impresion --- */
+@media print {
+  .invoice-detail-page__back-btn,
+  .invoice-detail-page__header-actions {
+    display: none;
+  }
+
+  .invoice-detail-page {
+    gap: 12px;
+  }
+
+  .invoice-detail-page__totals {
+    border: 1px solid #ddd;
+  }
+}

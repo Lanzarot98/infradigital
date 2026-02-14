@@ -1,0 +1,59 @@
+/* ============================================
+   Layout - Estructura principal
+   ============================================ */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.layout__main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-base);
+  margin-left: var(--sidebar-width);
+}
+
+.layout__content {
+  flex: 1;
+  padding: var(--space-6);
+  margin-top: var(--header-height);
+  animation: fadeIn var(--transition-base) ease;
+}
+
+/* --- Overlay móvil --- */
+.layout__overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-overlay);
+  z-index: calc(var(--z-sidebar) - 1);
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+.layout__overlay--visible {
+  display: block;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .layout__main-area {
+    margin-left: 0;
+  }
+
+  .layout__content {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .layout__content {
+    padding: var(--space-3);
+  }
+}

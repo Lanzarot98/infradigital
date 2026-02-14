@@ -1,0 +1,395 @@
+/* ============================================
+   InfraDigital - Página de Registro
+   ============================================ */
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #3b82f6 70%, #60a5fa 100%);
+  padding: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Formas decorativas de fondo --- */
+.register-page__bg-shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.register-page__shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.07;
+  background: #ffffff;
+}
+
+.register-page__shape--1 {
+  width: 500px;
+  height: 500px;
+  top: -120px;
+  left: -80px;
+  animation: regFloat 22s ease-in-out infinite;
+}
+
+.register-page__shape--2 {
+  width: 350px;
+  height: 350px;
+  bottom: -80px;
+  right: -60px;
+  animation: regFloat 26s ease-in-out infinite reverse;
+}
+
+.register-page__shape--3 {
+  width: 180px;
+  height: 180px;
+  top: 40%;
+  right: 20%;
+  animation: regFloat 18s ease-in-out infinite 2s;
+}
+
+/* --- Contenedor principal --- */
+.register-container {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Tarjeta de registro --- */
+.register-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), 0 0 80px rgba(0, 0, 0, 0.12);
+  padding: var(--space-10);
+  animation: regSlideUp 0.5s ease;
+}
+
+/* --- Cabecera --- */
+.register-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.register-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.register-logo-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.35);
+}
+
+.register-logo-icon span {
+  color: var(--text-white);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  letter-spacing: 1px;
+}
+
+.register-brand {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.register-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* --- Alerta --- */
+.register-alert {
+  margin-bottom: var(--space-4);
+}
+
+/* --- Formulario --- */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* --- Campos obligatorios --- */
+.auth-required {
+  color: var(--danger);
+  font-weight: var(--font-weight-bold);
+}
+
+/* --- Indicador de fuerza de contraseña --- */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.password-strength__bar {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.password-strength__segment {
+  height: 4px;
+  flex: 1;
+  border-radius: 2px;
+  background-color: var(--border);
+  transition: background-color var(--transition-fast);
+}
+
+.password-strength__segment--active {
+  background-color: var(--primary-light);
+}
+
+.password-strength__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* --- Pie de la tarjeta --- */
+.register-footer {
+  text-align: center;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-light);
+}
+
+.register-footer p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* --- Estilos compartidos auth (duplicados para independencia) --- */
+.register-page .auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.register-page .auth-form-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.register-page .auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.register-page .auth-input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-light);
+  pointer-events: none;
+  transition: color var(--transition-fast);
+  z-index: 1;
+}
+
+.register-page .auth-form-input {
+  width: 100%;
+  padding: 12px 14px 12px 44px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  transition: all var(--transition-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.register-page .auth-form-input::placeholder {
+  color: var(--text-light);
+}
+
+.register-page .auth-form-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.register-page .auth-input-wrapper:focus-within .auth-input-icon {
+  color: var(--primary-light);
+}
+
+.register-page .auth-form-input:disabled {
+  background: var(--border-light);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.register-page .auth-form-input--error {
+  border-color: var(--danger);
+}
+
+.register-page .auth-form-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.register-page .auth-field-error {
+  font-size: var(--font-size-xs);
+  color: var(--danger);
+  margin-top: 2px;
+}
+
+.register-page .auth-submit-btn {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--text-white);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: var(--space-2);
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
+}
+
+.register-page .auth-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+}
+
+.register-page .auth-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-page .auth-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.register-page .auth-btn-content,
+.register-page .auth-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.register-page .auth-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: regSpin 0.7s linear infinite;
+}
+
+.register-page .auth-link {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+  transition: color var(--transition-fast);
+}
+
+.register-page .auth-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.register-page .auth-copyright {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-6);
+}
+
+/* ============================================
+   Animaciones
+   ============================================ */
+
+@keyframes regSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes regSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes regFloat {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-15px, 20px);
+  }
+  50% {
+    transform: translate(10px, -15px);
+  }
+  75% {
+    transform: translate(-20px, -10px);
+  }
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+
+  .register-logo-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .register-brand {
+    font-size: var(--font-size-xl);
+  }
+
+  .register-subtitle {
+    font-size: var(--font-size-xs);
+  }
+
+  .password-strength {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .password-strength__label {
+    text-align: left;
+  }
+}

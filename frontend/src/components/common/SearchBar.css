@@ -1,0 +1,71 @@
+﻿/* ============================================
+   SearchBar - Barra de busqueda
+   ============================================ */
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 360px;
+  width: 100%;
+}
+
+.search-bar__icon {
+  position: absolute;
+  left: 0.875rem;
+  display: flex;
+  align-items: center;
+  color: var(--text-light);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.search-bar__input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 2.75rem;
+  font-size: var(--font-size-sm);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.search-bar__input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.search-bar__input::placeholder {
+  color: var(--text-light);
+}
+
+.search-bar__clear {
+  position: absolute;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.search-bar__clear:hover {
+  background-color: var(--border);
+  color: var(--text-primary);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .search-bar {
+    max-width: 100%;
+  }
+}
