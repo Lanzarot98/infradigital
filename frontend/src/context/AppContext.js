@@ -1,4 +1,4 @@
-﻿import React, { createContext, useReducer, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useReducer, useEffect, useCallback, useMemo } from 'react';
 
 /**
  * AppContext - Contexto global de la aplicacion InfraDigital
@@ -135,7 +135,7 @@ export const AppProvider = ({ children }) => {
             type: APP_ACTIONS.ADD_NOTIFICATION,
             payload: {
               type: 'success',
-              title: 'Sincronizacion completada',
+              title: 'Sincronización completada',
               message: 'Se sincronizaron ' + (payload.count || 0) + ' operaciones pendientes.',
               autoClose: 5000,
             },
@@ -169,17 +169,29 @@ export const AppProvider = ({ children }) => {
   const addNotification = useCallback((notification) => {
     const id = Date.now().toString(36) + Math.random().toString(36).substring(2);
 
+    const autoCloseDefaults = {
+      success: 4000,
+      error: false,
+      warning: 6000,
+      info: 5000,
+    };
+
+    let autoClose = notification.autoClose;
+    if (autoClose === undefined) {
+      autoClose = autoCloseDefaults[notification.type] !== undefined
+        ? autoCloseDefaults[notification.type]
+        : 4000;
+    }
+
     dispatch({
       type: APP_ACTIONS.ADD_NOTIFICATION,
-      payload: { ...notification, id },
+      payload: { ...notification, id, autoClose },
     });
 
-    // Auto-cerrar si se especifica
-    if (notification.autoClose !== false) {
-      const timeout = notification.autoClose || 4000;
+    if (typeof autoClose === 'number' && autoClose > 0) {
       setTimeout(() => {
         dispatch({ type: APP_ACTIONS.REMOVE_NOTIFICATION, payload: id });
-      }, timeout);
+      }, autoClose);
     }
 
     return id;

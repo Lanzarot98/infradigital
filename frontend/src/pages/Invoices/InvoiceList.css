@@ -201,35 +201,45 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: none;
-  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 6px);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.15s ease;
   background: transparent;
+  padding: 0;
 }
 
 .invoice-action-btn--view {
-  color: var(--primary);
+  color: #1e40af;
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 .invoice-action-btn--view:hover {
-  background: var(--primary-50);
+  background: #dbeafe;
+  color: #1e3a8a;
 }
 
 .invoice-action-btn--pay {
-  color: var(--success);
+  color: #15803d;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
 }
 
 .invoice-action-btn--pay:hover {
-  background: var(--success-light);
+  background: #dcfce7;
+  color: #166534;
 }
 
 .invoice-action-btn--cancel {
-  color: var(--danger);
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
 }
 
 .invoice-action-btn--cancel:hover {
-  background: var(--danger-light);
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 /* --- Paginacion --- */

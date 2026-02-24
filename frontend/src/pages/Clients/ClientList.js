@@ -75,16 +75,21 @@ const ClientList = () => {
       }
 
       const response = await clientService.getAll(params);
-      const data = response.data;
+      const responseData = response.data;
+      var innerData = responseData.data || responseData;
+      var pagination = (innerData && innerData.pagination) || responseData;
 
-      if (data.clients) {
-        setClients(data.clients);
-        setTotalPages(data.totalPages || 1);
-        setTotalClients(data.total || data.clients.length);
-      } else if (Array.isArray(data)) {
-        setClients(data);
+      var clientList = innerData.clients || [];
+      if (!Array.isArray(clientList)) clientList = [];
+
+      if (clientList.length > 0) {
+        setClients(clientList);
+        setTotalPages(pagination.totalPages || 1);
+        setTotalClients(pagination.total || clientList.length);
+      } else if (Array.isArray(innerData)) {
+        setClients(innerData);
         setTotalPages(1);
-        setTotalClients(data.length);
+        setTotalClients(innerData.length);
       } else {
         setClients([]);
         setTotalPages(1);
@@ -105,28 +110,30 @@ const ClientList = () => {
   const calculateStats = useCallback(async () => {
     try {
       const response = await clientService.getAll({ limit: 9999 });
-      const data = response.data;
-      const allClients = data.clients || (Array.isArray(data) ? data : []);
+      const responseData = response.data;
+      var innerStatsData = responseData.data || responseData;
+      const allClients = innerStatsData.clients || (Array.isArray(innerStatsData) ? innerStatsData : []);
 
       const natural = allClients.filter(
-        (c) => c.tipo === 'natural' || c.tipo === 'Persona Natural'
+        (c) => c.type === 'persona_natural'
       ).length;
       const juridica = allClients.filter(
-        (c) => c.tipo === 'juridica' || c.tipo === 'Persona Jurídica'
+        (c) => c.type === 'persona_juridica'
       ).length;
 
+      var paginationStats = (innerStatsData && innerStatsData.pagination) || responseData;
       setStats({
-        total: data.total || allClients.length,
+        total: paginationStats.total || allClients.length,
         natural,
         juridica,
       });
     } catch (err) {
       // Use current data for stats if full fetch fails
       const natural = clients.filter(
-        (c) => c.tipo === 'natural' || c.tipo === 'Persona Natural'
+        (c) => c.type === 'persona_natural'
       ).length;
       const juridica = clients.filter(
-        (c) => c.tipo === 'juridica' || c.tipo === 'Persona Jurídica'
+        (c) => c.type === 'persona_juridica'
       ).length;
 
       setStats({
@@ -163,7 +170,7 @@ const ClientList = () => {
    */
   const handleRowClick = useCallback(
     (client) => {
-      navigate('/clients/' + client._id);
+      navigate('/clients/' + (client.id || client._id));
     },
     [navigate]
   );
@@ -185,11 +192,11 @@ const ClientList = () => {
     setDeleteModal((prev) => ({ ...prev, loading: true }));
 
     try {
-      await clientService.delete(deleteModal.client._id);
+      await clientService.delete(deleteModal.client.id || deleteModal.client._id);
       addNotification({
         type: 'success',
         title: 'Cliente eliminado',
-        message: 'El cliente "' + deleteModal.client.nombre + '" fue eliminado correctamente.',
+        message: 'El cliente "' + (deleteModal.client.name || deleteModal.client.nombre) + '" fue eliminado correctamente.',
       });
       setDeleteModal({ open: false, client: null, loading: false });
       fetchClients();
@@ -217,18 +224,18 @@ const ClientList = () => {
   /**
    * Get display label for client type
    */
-  const getTypeLabel = (tipo) => {
-    if (tipo === 'natural' || tipo === 'Persona Natural') return 'Persona Natural';
-    if (tipo === 'juridica' || tipo === 'Persona Jurídica') return 'Persona Jurídica';
-    return tipo || 'N/A';
+  const getTypeLabel = (type) => {
+    if (type === 'persona_natural') return 'Persona Natural';
+    if (type === 'persona_juridica') return 'Persona Jurídica';
+    return type || 'N/A';
   };
 
   /**
    * Get badge class for client type
    */
-  const getTypeBadgeClass = (tipo) => {
-    if (tipo === 'natural' || tipo === 'Persona Natural') return 'client-type-badge--natural';
-    if (tipo === 'juridica' || tipo === 'Persona Jurídica') return 'client-type-badge--juridica';
+  const getTypeBadgeClass = (type) => {
+    if (type === 'persona_natural') return 'client-type-badge--natural';
+    if (type === 'persona_juridica') return 'client-type-badge--juridica';
     return '';
   };
 
@@ -237,7 +244,7 @@ const ClientList = () => {
    */
   const columns = [
     {
-      key: 'nombre',
+      key: 'name',
       label: 'Nombre',
       render: (value) => (
         <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
@@ -251,22 +258,22 @@ const ClientList = () => {
       render: (value) => value || '—',
     },
     {
-      key: 'telefono',
+      key: 'phone',
       label: 'Teléfono',
       render: (value) => value || '—',
     },
     {
-      key: 'nit',
+      key: 'nit_cc',
       label: 'NIT/CC',
       render: (value) => (value ? formatNIT(value) : '—'),
     },
     {
-      key: 'ciudad',
+      key: 'city',
       label: 'Ciudad',
       render: (value) => value || '—',
     },
     {
-      key: 'tipo',
+      key: 'type',
       label: 'Tipo',
       render: (value) => (
         <span className={'client-type-badge ' + getTypeBadgeClass(value)}>
@@ -283,7 +290,7 @@ const ClientList = () => {
             className="client-list__action-btn client-list__action-btn--view"
             onClick={(e) => {
               e.stopPropagation();
-              navigate('/clients/' + client._id);
+              navigate('/clients/' + (client.id || client._id));
             }}
             title="Ver detalle"
             aria-label="Ver detalle"
@@ -294,7 +301,7 @@ const ClientList = () => {
             className="client-list__action-btn client-list__action-btn--edit"
             onClick={(e) => {
               e.stopPropagation();
-              navigate('/clients/edit/' + client._id);
+              navigate('/clients/edit/' + (client.id || client._id));
             }}
             title="Editar"
             aria-label="Editar"
@@ -319,8 +326,8 @@ const ClientList = () => {
    */
   const filterOptions = [
     { key: 'todos', label: 'Todos' },
-    { key: 'natural', label: 'Persona Natural' },
-    { key: 'juridica', label: 'Persona Jurídica' },
+    { key: 'persona_natural', label: 'Persona Natural' },
+    { key: 'persona_juridica', label: 'Persona Jurídica' },
   ];
 
   // Loading state
@@ -414,7 +421,6 @@ const ClientList = () => {
         <Table
           columns={columns}
           data={clients}
-          onRowClick={handleRowClick}
           loading={loading}
           emptyMessage="No se encontraron clientes"
         />
@@ -450,7 +456,7 @@ const ClientList = () => {
         ) : (
           clients.map((client) => (
             <div
-              key={client._id}
+              key={client.id || client._id}
               className="client-card"
               onClick={() => handleRowClick(client)}
               role="button"
@@ -461,13 +467,13 @@ const ClientList = () => {
             >
               <div className="client-card__header">
                 <div>
-                  <h4 className="client-card__name">{client.nombre || 'Sin nombre'}</h4>
+                  <h4 className="client-card__name">{client.name || 'Sin nombre'}</h4>
                   <span className="client-card__nit">
-                    {client.nit ? formatNIT(client.nit) : 'Sin NIT/CC'}
+                    {client.nit_cc ? formatNIT(client.nit_cc) : 'Sin NIT/CC'}
                   </span>
                 </div>
-                <span className={'client-type-badge ' + getTypeBadgeClass(client.tipo)}>
-                  {getTypeLabel(client.tipo)}
+                <span className={'client-type-badge ' + getTypeBadgeClass(client.type)}>
+                  {getTypeLabel(client.type)}
                 </span>
               </div>
               <div className="client-card__body">
@@ -477,16 +483,16 @@ const ClientList = () => {
                     <span>{client.email}</span>
                   </div>
                 )}
-                {client.telefono && (
+                {client.phone && (
                   <div className="client-card__row">
                     <FiPhone size={14} />
-                    <span>{client.telefono}</span>
+                    <span>{client.phone}</span>
                   </div>
                 )}
-                {client.ciudad && (
+                {client.city && (
                   <div className="client-card__row">
                     <FiMapPin size={14} />
-                    <span>{client.ciudad}</span>
+                    <span>{client.city}</span>
                   </div>
                 )}
               </div>
@@ -495,7 +501,7 @@ const ClientList = () => {
                   className="client-list__action-btn client-list__action-btn--view"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate('/clients/' + client._id);
+                    navigate('/clients/' + (client.id || client._id));
                   }}
                   title="Ver detalle"
                   aria-label="Ver detalle"
@@ -506,7 +512,7 @@ const ClientList = () => {
                   className="client-list__action-btn client-list__action-btn--edit"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate('/clients/edit/' + client._id);
+                    navigate('/clients/edit/' + (client.id || client._id));
                   }}
                   title="Editar"
                   aria-label="Editar"
@@ -562,7 +568,7 @@ const ClientList = () => {
         <p className="client-delete-modal__message">
           ¿Estás seguro de que deseas eliminar al cliente{' '}
           <span className="client-delete-modal__name">
-            "{deleteModal.client ? deleteModal.client.nombre : ''}"
+            "{deleteModal.client ? (deleteModal.client.name || deleteModal.client.nombre) : ''}"
           </span>
           ? Esta acción no se puede deshacer.
         </p>

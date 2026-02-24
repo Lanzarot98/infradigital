@@ -50,6 +50,11 @@ const User = sequelize.define('users', {
     allowNull: false,
     comment: 'Rol del usuario: admin o user'
   },
+  company: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    comment: 'Empresa a la que pertenece el usuario'
+  },
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 import './SearchBar.css';
 
@@ -79,7 +79,7 @@ const SearchBar = ({ value, onChange, placeholder }) => {
         <button
           className="search-bar__clear"
           onClick={handleClear}
-          aria-label="Limpiar b\u00fasqueda"
+          aria-label="Limpiar búsqueda"
           type="button"
         >
           <FiX size={16} />

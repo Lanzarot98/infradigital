@@ -1,4 +1,4 @@
-﻿import React, { createContext, useReducer, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useReducer, useEffect, useCallback, useMemo } from 'react';
 import api from '../services/api';
 
 /**
@@ -136,21 +136,21 @@ export const AuthProvider = ({ children }) => {
 
         // Obtener perfil del usuario
         const response = await api.get('/auth/profile');
+        // El backend responde con { success, data: { user } }
+        const profileData = response.data?.data || response.data;
+        const user = profileData?.user || profileData;
 
-        if (response.data && response.data.user) {
+        if (user && user.id) {
           dispatch({
             type: AUTH_ACTIONS.AUTH_SUCCESS,
-            payload: {
-              user: response.data.user,
-              token: storedToken,
-            },
+            payload: { user, token: storedToken },
           });
-          localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+          localStorage.setItem(USER_KEY, JSON.stringify(user));
         } else {
-          throw new Error('Respuesta de perfil invalida');
+          throw new Error('Respuesta de perfil inválida');
         }
       } catch (error) {
-        console.warn('InfraDigital: Token expirado o invalido, cerrando sesion.');
+        console.warn('InfraDigital: Token expirado o inválido, cerrando sesión.');
 
         // Si estamos offline, intentar cargar usuario desde localStorage
         if (!navigator.onLine) {
@@ -187,7 +187,15 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data;
+      const responseData = response.data || {};
+      // El backend envuelve en { success, data: { user, token } }
+      const innerData = responseData.data || responseData;
+      const { token, user } = innerData;
+
+      // Validar que la respuesta tenga token y usuario reales
+      if (!token || !user) {
+        throw new Error('Respuesta del servidor inválida. No se recibió token de autenticación.');
+      }
 
       setAuthToken(token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -200,7 +208,8 @@ export const AuthProvider = ({ children }) => {
       return { success: true, user };
     } catch (error) {
       const message = (error.response && error.response.data && error.response.data.message)
-        || 'Error al iniciar sesion. Verifica tus credenciales.';
+        || error.message
+        || 'Error al iniciar sesión. Verifica que el servidor esté ejecutándose.';
 
       dispatch({ type: AUTH_ACTIONS.AUTH_ERROR, payload: message });
       return { success: false, message };
@@ -216,7 +225,8 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await api.post('/auth/register', userData);
-      const { token, user } = response.data;
+      const regData = response.data?.data || response.data;
+      const { token, user } = regData;
 
       setAuthToken(token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));

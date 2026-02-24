@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
 import { AuthContext } from '../../context/AuthContext';
@@ -7,36 +7,23 @@ import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, loading, error, clearError, isAuthenticated } = useContext(AuthContext);
+  const { login, loading, error, clearError } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
-    return () => clearError();
-  }, [clearError]);
-
   const handleChange = (e) => {
-    var name = e.target.name;
-    var value = e.target.value;
-    setFormData(function (prev) {
-      return Object.assign({}, prev, { [name]: value });
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     clearError();
-    var result = await login(formData.email, formData.password);
-    if (result.success) {
+    const result = await login(formData.email, formData.password);
+    if (result && result.success) {
       navigate('/dashboard', { replace: true });
     }
   };
@@ -100,7 +87,7 @@ const Login = () => {
                   name="password"
                   type="password"
                   className="auth-form-input"
-                  placeholder="••••••••"
+                  placeholder="********"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -140,7 +127,7 @@ const Login = () => {
         </div>
 
         <p className="auth-copyright">
-          &copy; {new Date().getFullYear()} InfraDigital — Todos los derechos reservados
+          &copy; {new Date().getFullYear()} InfraDigital - Todos los derechos reservados
         </p>
       </div>
     </div>

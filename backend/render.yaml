@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: infradigital-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        fromDatabase:
+          name: infradigital-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: infradigital-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: infradigital-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: infradigital-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: infradigital-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://infradigital.vercel.app
+
+databases:
+  - name: infradigital-db
+    plan: free
+    databaseName: infradigital

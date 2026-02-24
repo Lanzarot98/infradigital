@@ -76,23 +76,23 @@ var ProductForm = function () {
 
       try {
         var response = await productService.getById(id);
-        var product = response.data.product || response.data;
+        var responseData = response.data;
+        var innerData = responseData.data || responseData;
+        var product = innerData.product || innerData;
 
         setFormData({
-          nombre: product.nombre || '',
-          descripcion: product.descripcion || '',
+          nombre: product.name || '',
+          descripcion: product.description || '',
           sku: product.sku || '',
-          precio: product.precio != null ? String(product.precio) : '',
-          costo: product.costo != null ? String(product.costo) : '',
+          precio: product.price != null ? String(product.price) : '',
+          costo: product.cost != null ? String(product.cost) : '',
           stock: product.stock != null ? String(product.stock) : '',
           stockMinimo:
-            product.stockMinimo != null
-              ? String(product.stockMinimo)
-              : product.minStock != null
+            product.minStock != null
               ? String(product.minStock)
               : '',
-          categoria: product.categoria || '',
-          unidadMedida: product.unidadMedida || '',
+          categoria: product.category || '',
+          unidadMedida: product.unit || '',
         });
       } catch (err) {
         var message =
@@ -176,14 +176,14 @@ var ProductForm = function () {
 
     try {
       var payload = {
-        nombre: formData.nombre.trim(),
-        descripcion: formData.descripcion.trim(),
+        name: formData.nombre.trim(),
+        description: formData.descripcion.trim(),
         sku: formData.sku.trim(),
-        precio: Number(formData.precio),
-        costo: Number(formData.costo),
-        stockMinimo: formData.stockMinimo ? Number(formData.stockMinimo) : 0,
-        categoria: formData.categoria,
-        unidadMedida: formData.unidadMedida,
+        price: Number(formData.precio),
+        cost: Number(formData.costo),
+        minStock: formData.stockMinimo ? Number(formData.stockMinimo) : 0,
+        category: formData.categoria,
+        unit: formData.unidadMedida,
       };
 
       if (!isEditing && formData.stock) {
@@ -196,7 +196,7 @@ var ProductForm = function () {
           type: 'success',
           title: 'Producto actualizado',
           message:
-            'El producto "' + payload.nombre + '" fue actualizado correctamente.',
+            'El producto "' + payload.name + '" fue actualizado correctamente.',
         });
       } else {
         await productService.create(payload);
@@ -204,7 +204,7 @@ var ProductForm = function () {
           type: 'success',
           title: 'Producto creado',
           message:
-            'El producto "' + payload.nombre + '" fue creado correctamente.',
+            'El producto "' + payload.name + '" fue creado correctamente.',
         });
       }
 

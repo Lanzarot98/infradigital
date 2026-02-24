@@ -49,7 +49,7 @@ api.interceptors.response.use(
     if (!error.response) {
       console.warn('InfraDigital API: Error de red o servidor no disponible');
       return Promise.reject({
-        message: 'No se pudo conectar con el servidor. Verifica tu conexion a internet.',
+        message: 'No se pudo conectar con el servidor. Verifica tu conexión a internet.',
         offline: true,
       });
     }
@@ -58,7 +58,7 @@ api.interceptors.response.use(
 
     // 401 - No autorizado: token expirado o invalido
     if (status === 401) {
-      console.warn('InfraDigital API: Sesion expirada o no autorizada');
+      console.warn('InfraDigital API: Sesión expirada o no autorizada');
       localStorage.removeItem('infradigital_token');
       localStorage.removeItem('infradigital_user');
 
@@ -231,6 +231,42 @@ export const dashboardService = {
   /** Tendencia de ventas diarias (ultimos 30 dias) */
   getSalesTrend: () =>
     api.get('/dashboard/sales-trend'),
+};
+
+// ============================================
+// SERVICIO DE AUDITORIA
+// Endpoints: GET /audit, GET /audit/user/:userId
+//            GET /audit/table/:tableName, GET /audit/stats
+// ============================================
+export const auditService = {
+  /** Listar registros de auditoria con filtros */
+  getAll: (params = {}) => api.get('/audit', { params }),
+
+  /** Obtener registros por usuario */
+  getByUser: (userId, params = {}) => api.get('/audit/user/' + userId, { params }),
+
+  /** Obtener registros por tabla */
+  getByTable: (tableName, params = {}) => api.get('/audit/table/' + tableName, { params }),
+
+  /** Obtener estadisticas de auditoria */
+  getStats: () => api.get('/audit/stats'),
+};
+
+// ============================================
+// SERVICIO DE GESTIÓN DE USUARIOS
+// Endpoints: GET/POST /users, GET/PUT/DELETE /users/:id
+//            PATCH /users/:id/reset-password
+//            GET/PUT /users/permissions/:role
+// ============================================
+export const userService = {
+  getAll: (params = {}) => api.get('/users', { params }),
+  getById: (id) => api.get('/users/' + id),
+  create: (data) => api.post('/users', data),
+  update: (id, data) => api.put('/users/' + id, data),
+  delete: (id) => api.delete('/users/' + id),
+  resetPassword: (id, data) => api.patch('/users/' + id + '/reset-password', data),
+  getPermissions: (role) => api.get('/users/permissions/' + role),
+  updatePermissions: (role, data) => api.put('/users/permissions/' + role, data),
 };
 
 export default api;

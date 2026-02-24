@@ -8,14 +8,14 @@ import Alert from '../../components/common/Alert';
 import './ClientForm.css';
 
 const INITIAL_FORM = {
-  nombre: '',
-  tipo: '',
-  nit: '',
+  name: '',
+  type: '',
+  nit_cc: '',
   email: '',
-  telefono: '',
-  direccion: '',
-  ciudad: '',
-  notas: '',
+  phone: '',
+  address: '',
+  city: '',
+  notes: '',
 };
 
 const ClientForm = () => {
@@ -41,17 +41,19 @@ const ClientForm = () => {
       setPageLoading(true);
       try {
         const response = await clientService.getById(id);
-        const client = response.data.client || response.data;
+        var responseData = response.data;
+        var innerData = responseData.data || responseData;
+        const client = innerData.client || innerData;
 
         setFormData({
-          nombre: client.nombre || '',
-          tipo: client.tipo || '',
-          nit: client.nit || '',
+          name: client.name || '',
+          type: client.type || '',
+          nit_cc: client.nit_cc || '',
           email: client.email || '',
-          telefono: client.telefono || '',
-          direccion: client.direccion || '',
-          ciudad: client.ciudad || '',
-          notas: client.notas || '',
+          phone: client.phone || '',
+          address: client.address || '',
+          city: client.city || '',
+          notes: client.notes || '',
         });
       } catch (err) {
         console.error('Error al cargar cliente:', err);
@@ -77,7 +79,6 @@ const ClientForm = () => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
 
-      // Clear error for this field when user types
       if (errors[name]) {
         setErrors((prev) => {
           const next = { ...prev };
@@ -95,20 +96,20 @@ const ClientForm = () => {
   const validate = useCallback(() => {
     const newErrors = {};
 
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es obligatorio';
-    } else if (formData.nombre.trim().length < 2) {
-      newErrors.nombre = 'El nombre debe tener al menos 2 caracteres';
+    if (!formData.name.trim()) {
+      newErrors.name = 'El nombre es obligatorio';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'El nombre debe tener al menos 2 caracteres';
     }
 
-    if (!formData.tipo) {
-      newErrors.tipo = 'Selecciona un tipo de persona';
+    if (!formData.type) {
+      newErrors.type = 'Selecciona un tipo de persona';
     }
 
-    if (!formData.nit.trim()) {
-      newErrors.nit = 'El NIT o cédula es obligatorio';
-    } else if (formData.nit.replace(/[^0-9]/g, '').length < 5) {
-      newErrors.nit = 'Ingresa un NIT o cédula válido (mínimo 5 dígitos)';
+    if (!formData.nit_cc.trim()) {
+      newErrors.nit_cc = 'El NIT o cédula es obligatorio';
+    } else if (formData.nit_cc.replace(/[^0-9]/g, '').length < 5) {
+      newErrors.nit_cc = 'Ingresa un NIT o cédula válido (mínimo 5 dígitos)';
     }
 
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -116,11 +117,11 @@ const ClientForm = () => {
     }
 
     if (
-      formData.telefono &&
-      formData.telefono.replace(/[^0-9]/g, '').length > 0 &&
-      formData.telefono.replace(/[^0-9]/g, '').length < 7
+      formData.phone &&
+      formData.phone.replace(/[^0-9]/g, '').length > 0 &&
+      formData.phone.replace(/[^0-9]/g, '').length < 7
     ) {
-      newErrors.telefono = 'Ingresa un número de teléfono válido';
+      newErrors.phone = 'Ingresa un número de teléfono válido';
     }
 
     setErrors(newErrors);
@@ -141,14 +142,14 @@ const ClientForm = () => {
 
       try {
         const payload = {
-          nombre: formData.nombre.trim(),
-          tipo: formData.tipo,
-          nit: formData.nit.trim(),
+          name: formData.name.trim(),
+          type: formData.type,
+          nit_cc: formData.nit_cc.trim(),
           email: formData.email.trim(),
-          telefono: formData.telefono.trim(),
-          direccion: formData.direccion.trim(),
-          ciudad: formData.ciudad.trim(),
-          notas: formData.notas.trim(),
+          phone: formData.phone.trim(),
+          address: formData.address.trim(),
+          city: formData.city.trim(),
+          notes: formData.notes.trim(),
         };
 
         if (isEditing) {
@@ -156,14 +157,14 @@ const ClientForm = () => {
           addNotification({
             type: 'success',
             title: 'Cliente actualizado',
-            message: 'Los datos del cliente "' + payload.nombre + '" fueron actualizados.',
+            message: 'Los datos del cliente "' + payload.name + '" fueron actualizados.',
           });
         } else {
           await clientService.create(payload);
           addNotification({
             type: 'success',
             title: 'Cliente creado',
-            message: 'El cliente "' + payload.nombre + '" fue creado exitosamente.',
+            message: 'El cliente "' + payload.name + '" fue creado exitosamente.',
           });
         }
 
@@ -250,81 +251,81 @@ const ClientForm = () => {
 
             {/* Nombre */}
             <div>
-              <label className="client-form__label" htmlFor="nombre">
+              <label className="client-form__label" htmlFor="name">
                 Nombre completo / Razón social
                 <span className="client-form__required">*</span>
               </label>
               <input
-                id="nombre"
-                name="nombre"
+                id="name"
+                name="name"
                 type="text"
                 className={
-                  'client-form__input' + (errors.nombre ? ' client-form__input--error' : '')
+                  'client-form__input' + (errors.name ? ' client-form__input--error' : '')
                 }
-                value={formData.nombre}
+                value={formData.name}
                 onChange={handleChange}
                 placeholder="Ej: Juan Pérez o Empresa S.A.S."
                 autoFocus
                 disabled={loading}
               />
-              {errors.nombre && (
+              {errors.name && (
                 <span className="client-form__error">
                   <FiAlertCircle size={12} />
-                  {errors.nombre}
+                  {errors.name}
                 </span>
               )}
             </div>
 
             {/* Tipo de persona */}
             <div>
-              <label className="client-form__label" htmlFor="tipo">
+              <label className="client-form__label" htmlFor="type">
                 Tipo de persona
                 <span className="client-form__required">*</span>
               </label>
               <select
-                id="tipo"
-                name="tipo"
+                id="type"
+                name="type"
                 className={
-                  'client-form__select' + (errors.tipo ? ' client-form__select--error' : '')
+                  'client-form__select' + (errors.type ? ' client-form__select--error' : '')
                 }
-                value={formData.tipo}
+                value={formData.type}
                 onChange={handleChange}
                 disabled={loading}
               >
                 <option value="">Seleccionar tipo...</option>
-                <option value="natural">Persona Natural</option>
-                <option value="juridica">Persona Jurídica</option>
+                <option value="persona_natural">Persona Natural</option>
+                <option value="persona_juridica">Persona Jurídica</option>
               </select>
-              {errors.tipo && (
+              {errors.type && (
                 <span className="client-form__error">
                   <FiAlertCircle size={12} />
-                  {errors.tipo}
+                  {errors.type}
                 </span>
               )}
             </div>
 
             {/* NIT/CC */}
             <div>
-              <label className="client-form__label" htmlFor="nit">
+              <label className="client-form__label" htmlFor="nit_cc">
                 NIT / Cédula
                 <span className="client-form__required">*</span>
               </label>
               <input
-                id="nit"
-                name="nit"
+                id="nit_cc"
+                name="nit_cc"
                 type="text"
                 className={
-                  'client-form__input' + (errors.nit ? ' client-form__input--error' : '')
+                  'client-form__input' + (errors.nit_cc ? ' client-form__input--error' : '')
                 }
-                value={formData.nit}
+                value={formData.nit_cc}
                 onChange={handleChange}
                 placeholder="Ej: 900123456-7 o 1234567890"
                 disabled={loading}
               />
-              {errors.nit && (
+              {errors.nit_cc && (
                 <span className="client-form__error">
                   <FiAlertCircle size={12} />
-                  {errors.nit}
+                  {errors.nit_cc}
                 </span>
               )}
               <span className="client-form__hint">
@@ -363,40 +364,40 @@ const ClientForm = () => {
 
             {/* Teléfono */}
             <div>
-              <label className="client-form__label" htmlFor="telefono">
+              <label className="client-form__label" htmlFor="phone">
                 Teléfono
               </label>
               <input
-                id="telefono"
-                name="telefono"
+                id="phone"
+                name="phone"
                 type="tel"
                 className={
-                  'client-form__input' + (errors.telefono ? ' client-form__input--error' : '')
+                  'client-form__input' + (errors.phone ? ' client-form__input--error' : '')
                 }
-                value={formData.telefono}
+                value={formData.phone}
                 onChange={handleChange}
                 placeholder="Ej: 3101234567"
                 disabled={loading}
               />
-              {errors.telefono && (
+              {errors.phone && (
                 <span className="client-form__error">
                   <FiAlertCircle size={12} />
-                  {errors.telefono}
+                  {errors.phone}
                 </span>
               )}
             </div>
 
             {/* Ciudad */}
             <div>
-              <label className="client-form__label" htmlFor="ciudad">
+              <label className="client-form__label" htmlFor="city">
                 Ciudad
               </label>
               <input
-                id="ciudad"
-                name="ciudad"
+                id="city"
+                name="city"
                 type="text"
                 className="client-form__input"
-                value={formData.ciudad}
+                value={formData.city}
                 onChange={handleChange}
                 placeholder="Ej: Bogotá"
                 disabled={loading}
@@ -405,15 +406,15 @@ const ClientForm = () => {
 
             {/* Dirección */}
             <div className="client-form__field--full">
-              <label className="client-form__label" htmlFor="direccion">
+              <label className="client-form__label" htmlFor="address">
                 Dirección
               </label>
               <input
-                id="direccion"
-                name="direccion"
+                id="address"
+                name="address"
                 type="text"
                 className="client-form__input"
-                value={formData.direccion}
+                value={formData.address}
                 onChange={handleChange}
                 placeholder="Ej: Calle 123 #45-67, Barrio Centro"
                 disabled={loading}
@@ -422,14 +423,14 @@ const ClientForm = () => {
 
             {/* Notas */}
             <div className="client-form__field--full">
-              <label className="client-form__label" htmlFor="notas">
+              <label className="client-form__label" htmlFor="notes">
                 Notas
               </label>
               <textarea
-                id="notas"
-                name="notas"
+                id="notes"
+                name="notes"
                 className="client-form__textarea"
-                value={formData.notas}
+                value={formData.notes}
                 onChange={handleChange}
                 placeholder="Notas adicionales sobre el cliente..."
                 rows={3}

@@ -250,7 +250,7 @@ const DashboardPage = () => {
       {/* Graficos - Grid 2x2 */}
       <div className="dashboard-page__charts-grid">
         {/* Tendencia de ventas */}
-        <Card title="Tendencia de Ventas" subtitle="Ultimos 30 dias" className="dashboard-page__chart-card">
+        <Card title="Tendencia de Ventas" subtitle="Últimos 30 días" className="dashboard-page__chart-card">
           {salesTrend.length > 0 ? (
             <div className="dashboard-page__chart-container">
               <ResponsiveContainer width="100%" height={300}>
@@ -299,7 +299,7 @@ const DashboardPage = () => {
         </Card>
 
         {/* Ingresos mensuales */}
-        <Card title="Ingresos Mensuales" subtitle="Ultimos 12 meses" className="dashboard-page__chart-card">
+        <Card title="Ingresos Mensuales" subtitle="Últimos 12 meses" className="dashboard-page__chart-card">
           {monthlyRevenue.length > 0 ? (
             <div className="dashboard-page__chart-container">
               <ResponsiveContainer width="100%" height={300}>
@@ -335,7 +335,7 @@ const DashboardPage = () => {
         </Card>
 
         {/* Top productos */}
-        <Card title="Productos Mas Vendidos" subtitle="Top 10" className="dashboard-page__chart-card">
+        <Card title="Productos Más Vendidos" subtitle="Top 10" className="dashboard-page__chart-card">
           {topProducts.length > 0 ? (
             <div className="dashboard-page__chart-container">
               <ResponsiveContainer width="100%" height={300}>
@@ -377,7 +377,7 @@ const DashboardPage = () => {
         </Card>
 
         {/* Ingresos por metodo de pago */}
-        <Card title="Ingresos por Metodo de Pago" subtitle="Distribucion actual" className="dashboard-page__chart-card">
+        <Card title="Ingresos por Método de Pago" subtitle="Distribución actual" className="dashboard-page__chart-card">
           {revenueByMethod.length > 0 && revenueByMethod.some((m) => m.value > 0) ? (
             <div className="dashboard-page__chart-container dashboard-page__chart-container--pie">
               <ResponsiveContainer width="100%" height={300}>
@@ -406,7 +406,7 @@ const DashboardPage = () => {
           ) : (
             <div className="dashboard-page__chart-empty">
               <FiDollarSign size={36} />
-              <p>No hay datos de metodos de pago disponibles</p>
+              <p>No hay datos de métodos de pago disponibles</p>
             </div>
           )}
         </Card>
@@ -455,7 +455,7 @@ const DashboardPage = () => {
                       <div className="dashboard-page__alert-text">
                         <span className="dashboard-page__alert-name">{product.nombre}</span>
                         <span className="dashboard-page__alert-stock">
-                          Stock: <strong>{product.stock}</strong> / Minimo: <strong>{product.stockMinimo}</strong>
+                          Stock: <strong>{product.stock}</strong> / Mínimo: <strong>{product.stockMinimo}</strong>
                         </span>
                       </div>
                     </div>
@@ -497,7 +497,7 @@ const DashboardPage = () => {
         {/* Facturas recientes */}
         <Card
           title="Facturas Recientes"
-          subtitle="Ultimas 5 facturas"
+          subtitle="Últimas 5 facturas"
           className="dashboard-page__recent-card"
           headerAction={
             <button className="dashboard-page__view-all-btn" onClick={() => navigate('/invoices')}>

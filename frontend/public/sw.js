@@ -1,4 +1,4 @@
-﻿/**
+/**
  * InfraDigital - Service Worker
  * 
  * Estrategias de cache:
@@ -88,6 +88,11 @@ self.addEventListener('fetch', (event) => {
 
   // Ignorar peticiones que no son GET para cache
   if (request.method !== 'GET') {
+    // NUNCA interceptar peticiones de autenticacion (login, register)
+    // Estas deben fallar normalmente si el backend no esta disponible
+    if (request.url.includes('/api/auth/')) {
+      return; // Dejar que el navegador maneje normalmente
+    }
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
       event.respondWith(handleMutationRequest(request));
     }

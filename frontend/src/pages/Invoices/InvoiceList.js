@@ -79,37 +79,41 @@ const InvoiceList = () => {
       if (dateTo) params.dateTo = dateTo;
 
       const response = await invoiceService.getAll(params);
-      const data = response.data;
+      const responseData = response.data;
+      var innerData = responseData.data || responseData;
+      var pagination = (innerData && innerData.pagination) || responseData;
 
-      setInvoices(data.invoices || data.data || []);
-      setTotalPages(data.totalPages || Math.ceil((data.total || 0) / limit) || 1);
-      setTotalItems(data.total || data.totalItems || 0);
+      var invoiceList = innerData.invoices || [];
+      if (!Array.isArray(invoiceList)) invoiceList = [];
 
-      // Calcular estadisticas desde la respuesta
-      if (data.stats) {
+      setInvoices(invoiceList);
+      setTotalPages(pagination.totalPages || Math.ceil((pagination.total || 0) / limit) || 1);
+      setTotalItems(pagination.total || invoiceList.length || 0);
+
+      if (innerData.stats) {
         setStats({
-          total: data.stats.total || 0,
-          pagadas: data.stats.pagadas || 0,
-          pendientes: data.stats.pendientes || 0,
-          ingresos: data.stats.ingresos || 0,
+          total: innerData.stats.total || 0,
+          pagadas: innerData.stats.pagadas || 0,
+          pendientes: innerData.stats.pendientes || 0,
+          ingresos: innerData.stats.ingresos || 0,
         });
       } else {
-        const allInvoices = data.invoices || data.data || [];
+        const allInvoices = invoiceList;
         const pagadas = allInvoices.filter(function (inv) {
-          return inv.estado === 'pagada';
+          return inv.status === 'pagada';
         });
         const pendientes = allInvoices.filter(function (inv) {
-          return inv.estado === 'pendiente';
+          return inv.status === 'pendiente';
         });
         const totalIngresos = pagadas.reduce(function (sum, inv) {
           return sum + (inv.total || 0);
         }, 0);
 
         setStats({
-          total: data.total || allInvoices.length,
-          pagadas: data.totalPagadas || pagadas.length,
-          pendientes: data.totalPendientes || pendientes.length,
-          ingresos: data.totalIngresos || totalIngresos,
+          total: pagination.total || allInvoices.length,
+          pagadas: pagination.totalPagadas || pagadas.length,
+          pendientes: pagination.totalPendientes || pendientes.length,
+          ingresos: pagination.totalIngresos || totalIngresos,
         });
       }
     } catch (err) {
@@ -180,9 +184,9 @@ const InvoiceList = () => {
       if (!confirmModal.invoice) return;
 
       if (confirmModal.type === 'pagar') {
-        handleStatusChange(confirmModal.invoice._id, 'pagada');
+        handleStatusChange(confirmModal.invoice.id || confirmModal.invoice._id, 'pagada');
       } else if (confirmModal.type === 'anular') {
-        handleStatusChange(confirmModal.invoice._id, 'anulada');
+        handleStatusChange(confirmModal.invoice.id || confirmModal.invoice._id, 'anulada');
       }
     },
     [confirmModal, handleStatusChange]
@@ -206,27 +210,27 @@ const InvoiceList = () => {
     function () {
       return [
         {
-          key: 'numero',
+          key: 'invoiceNumber',
           label: 'Nro. Factura',
           render: function (value, row) {
             return (
               <span className="invoice-number">
                 <FiFileText size={14} />
-                {value || row.numero || 'N/A'}
+                {value || row.invoiceNumber || 'N/A'}
               </span>
             );
           },
         },
         {
-          key: 'cliente',
+          key: 'client',
           label: 'Cliente',
           render: function (value) {
             if (!value) return 'Sin cliente';
-            return typeof value === 'object' ? value.nombre || value.name || 'Sin nombre' : value;
+            return typeof value === 'object' ? value.name || 'Sin nombre' : value;
           },
         },
         {
-          key: 'fecha',
+          key: 'issueDate',
           label: 'Fecha',
           render: function (value, row) {
             return formatDate(value || row.createdAt);
@@ -240,7 +244,7 @@ const InvoiceList = () => {
           },
         },
         {
-          key: 'iva',
+          key: 'taxAmount',
           label: 'IVA',
           render: function (value) {
             return formatCurrency(value || 0);
@@ -254,7 +258,7 @@ const InvoiceList = () => {
           },
         },
         {
-          key: 'estado',
+          key: 'status',
           label: 'Estado',
           render: function (value) {
             var colorClass = getStatusColor(value);
@@ -263,7 +267,7 @@ const InvoiceList = () => {
           },
         },
         {
-          key: 'acciones',
+          key: 'actions',
           label: 'Acciones',
           render: function (_value, row) {
             return (
@@ -273,12 +277,12 @@ const InvoiceList = () => {
                   title="Ver detalle"
                   onClick={function (e) {
                     e.stopPropagation();
-                    navigate('/invoices/' + row._id);
+                    navigate('/invoices/' + (row.id || row._id));
                   }}
                 >
                   <FiEye size={15} />
                 </button>
-                {row.estado === 'pendiente' && (
+                {row.status === 'pendiente' && (
                   <button
                     className="invoice-action-btn invoice-action-btn--pay"
                     title="Marcar como pagada"
@@ -290,7 +294,7 @@ const InvoiceList = () => {
                     <FiCheck size={15} />
                   </button>
                 )}
-                {row.estado !== 'anulada' && row.estado !== 'pagada' && (
+                {row.status !== 'anulada' && row.status !== 'pagada' && (
                   <button
                     className="invoice-action-btn invoice-action-btn--cancel"
                     title="Anular factura"
@@ -315,16 +319,16 @@ const InvoiceList = () => {
    * Titulo del modal de confirmacion
    */
   var modalTitle =
-    confirmModal.type === 'pagar' ? 'Confirmar Pago' : 'Confirmar Anulacion';
+    confirmModal.type === 'pagar' ? 'Confirmar Pago' : 'Confirmar Anulación';
 
   var modalMessage =
     confirmModal.type === 'pagar'
-      ? 'Esta seguro de marcar la factura ' +
-        (confirmModal.invoice ? confirmModal.invoice.numero : '') +
+      ? '¿Está seguro de marcar la factura ' +
+        (confirmModal.invoice ? confirmModal.invoice.invoiceNumber : '') +
         ' como pagada?'
-      : 'Esta seguro de anular la factura ' +
-        (confirmModal.invoice ? confirmModal.invoice.numero : '') +
-        '? Esta accion no se puede deshacer.';
+      : '¿Está seguro de anular la factura ' +
+        (confirmModal.invoice ? confirmModal.invoice.invoiceNumber : '') +
+        '? Esta acción no se puede deshacer.';
 
   var hasFilters = search || statusFilter || dateFrom || dateTo;
 
@@ -333,7 +337,7 @@ const InvoiceList = () => {
       {/* Encabezado */}
       <div className="invoice-list-page__header">
         <div className="invoice-list-page__header-text">
-          <h1 className="invoice-list-page__title">Facturacion</h1>
+          <h1 className="invoice-list-page__title">Facturación</h1>
           <p className="invoice-list-page__subtitle">
             Gestiona tus facturas y controla tus ingresos
           </p>
@@ -341,7 +345,7 @@ const InvoiceList = () => {
         <button
           className="invoice-list-page__new-btn"
           onClick={function () {
-            navigate('/invoices/create');
+            navigate('/invoices/new');
           }}
         >
           <FiPlus size={18} />
@@ -384,7 +388,7 @@ const InvoiceList = () => {
             <SearchBar
               value={search}
               onChange={setSearch}
-              placeholder="Buscar por numero de factura o cliente..."
+              placeholder="Buscar por número de factura o cliente..."
             />
           </div>
 
@@ -466,9 +470,6 @@ const InvoiceList = () => {
           data={invoices}
           loading={loading}
           emptyMessage="No se encontraron facturas con los filtros seleccionados"
-          onRowClick={function (row) {
-            navigate('/invoices/' + row._id);
-          }}
         />
 
         {!loading && invoices.length > 0 && (
@@ -526,14 +527,14 @@ const InvoiceList = () => {
         {confirmModal.invoice && (
           <div className="invoice-confirm-modal__detail">
             <p>
-              <strong>Factura:</strong> {confirmModal.invoice.numero}
+              <strong>Factura:</strong> {confirmModal.invoice.invoiceNumber}
             </p>
             <p>
               <strong>Cliente:</strong>{' '}
-              {confirmModal.invoice.cliente
-                ? typeof confirmModal.invoice.cliente === 'object'
-                  ? confirmModal.invoice.cliente.nombre
-                  : confirmModal.invoice.cliente
+              {confirmModal.invoice.client
+                ? typeof confirmModal.invoice.client === 'object'
+                  ? confirmModal.invoice.client.name
+                  : confirmModal.invoice.client
                 : 'N/A'}
             </p>
             <p>

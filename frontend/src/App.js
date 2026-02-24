@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, AuthContext } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 
 // Layout
 import Layout from './components/Layout/Layout';
+import Loading from './components/common/Loading';
 
 // Importacion lazy de paginas para code-splitting
 const Dashboard = React.lazy(() => import('./pages/Dashboard/DashboardPage'));
@@ -16,6 +17,8 @@ const InvoiceDetail = React.lazy(() => import('./pages/Invoices/InvoiceDetail'))
 const ClientList = React.lazy(() => import('./pages/Clients/ClientList'));
 const ClientForm = React.lazy(() => import('./pages/Clients/ClientForm'));
 const ClientDetail = React.lazy(() => import('./pages/Clients/ClientDetail'));
+const AuditPage = React.lazy(() => import('./pages/Audit/AuditPage'));
+const UsersPage = React.lazy(() => import('./pages/Users/UsersPage'));
 const Login = React.lazy(() => import('./pages/Auth/Login'));
 const Register = React.lazy(() => import('./pages/Auth/Register'));
 
@@ -31,26 +34,22 @@ const LoadingFallback = () => (
     minHeight: '60vh',
     gap: '1rem',
   }}>
-    <div style={{
-      width: '40px',
-      height: '40px',
-      border: '3px solid #e2e8f0',
-      borderTopColor: '#1e40af',
-      borderRadius: '50%',
-      animation: 'spin 0.8s linear infinite',
-    }} />
-    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Cargando...</p>
+    <Loading size="lg" />
   </div>
 );
 
 /**
- * Componente de ruta protegida
- * Redirige a /login si el usuario no esta autenticado
+ * Ruta protegida - usa AuthContext para verificar autenticacion
  */
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('infradigital_token');
+  const { isAuthenticated, loading } = useContext(AuthContext);
 
-  if (!token) {
+  // Mientras carga la verificacion del token, mostrar loading
+  if (loading) {
+    return <LoadingFallback />;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -58,13 +57,17 @@ const ProtectedRoute = ({ children }) => {
 };
 
 /**
- * Componente de ruta publica
- * Redirige a /dashboard si el usuario ya esta autenticado
+ * Ruta publica - redirige si ya esta autenticado
  */
 const PublicRoute = ({ children }) => {
-  const token = localStorage.getItem('infradigital_token');
+  const { isAuthenticated, loading } = useContext(AuthContext);
 
-  if (token) {
+  // Mientras carga, mostrar loading (no redirigir prematuramente)
+  if (loading) {
+    return <LoadingFallback />;
+  }
+
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -73,11 +76,6 @@ const PublicRoute = ({ children }) => {
 
 /**
  * App - Componente principal de InfraDigital
- * 
- * Estructura de rutas:
- * - Rutas publicas: /login, /register
- * - Rutas protegidas: todas las demas, envueltas en Layout
- * - Redireccion de / a /dashboard
  */
 function App() {
   return (
@@ -129,6 +127,12 @@ function App() {
               <Route path="/clients/new" element={<ClientForm />} />
               <Route path="/clients/edit/:id" element={<ClientForm />} />
               <Route path="/clients/:id" element={<ClientDetail />} />
+
+              {/* Auditoría */}
+              <Route path="/audit" element={<AuditPage />} />
+
+              {/* Gestión de Usuarios */}
+              <Route path="/users" element={<UsersPage />} />
             </Route>
 
             {/* --- Redireccion raiz --- */}
@@ -150,9 +154,9 @@ function App() {
                   padding: '2rem',
                 }}>
                   <h1 style={{ fontSize: '6rem', fontWeight: 800, marginBottom: '0.5rem', opacity: 0.3 }}>404</h1>
-                  <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Pagina no encontrada</h2>
+                  <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Página no encontrada</h2>
                   <p style={{ opacity: 0.8, marginBottom: '2rem', maxWidth: '400px' }}>
-                    La pagina que buscas no existe o fue movida a otra ubicacion.
+                    La página que buscas no existe o fue movida a otra ubicación.
                   </p>
                   <a
                     href="/dashboard"
@@ -164,7 +168,6 @@ function App() {
                       borderRadius: '0.5rem',
                       textDecoration: 'none',
                       fontWeight: 500,
-                      transition: 'all 0.2s',
                     }}
                   >
                     Volver al inicio

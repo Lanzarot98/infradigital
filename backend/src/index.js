@@ -41,8 +41,11 @@ app.use(compression());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Habilitar CORS (Cross-Origin Resource Sharing)
+const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -57,7 +60,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Limitación de tasa de solicitudes (rate limiting)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // Ventana de 15 minutos
-  max: 100,                  // Máximo 100 solicitudes por ventana
+  max: 1000,                 // Máximo 1000 solicitudes por ventana (amplio para desarrollo)
   message: {
     success: false,
     message: 'Demasiadas solicitudes desde esta IP. Intente nuevamente en 15 minutos.'
@@ -79,6 +82,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 // ══════════════════════════════════════════════════════════════════════════════
 // RUTAS DE LA API
 // ══════════════════════════════════════════════════════════════════════════════
+
+// Health check para Render y monitoreo
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date() });
+});
 
 // Ruta raíz - Información de la API
 app.get('/', (req, res) => {
@@ -122,8 +130,8 @@ const startServer = async () => {
     console.log('✅ Conexión a PostgreSQL establecida exitosamente.');
 
     // Sincronizar modelos con la base de datos
-    // alter: true actualiza tablas sin eliminar datos existentes
-    await sequelize.sync({ alter: true });
+    // force: false solo crea tablas faltantes sin modificar las existentes
+    await sequelize.sync({ force: false });
     console.log('✅ Modelos sincronizados con la base de datos.');
 
     // Iniciar el servidor HTTP

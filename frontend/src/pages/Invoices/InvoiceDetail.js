@@ -65,9 +65,11 @@ const InvoiceDetail = () => {
 
       try {
         var response = await invoiceService.getById(id);
-        var data = response.data.invoice || response.data;
+        var responseData = response.data;
+        var innerData = responseData.data || responseData;
+        var data = innerData.invoice || innerData;
         setInvoice(data);
-        setNewStatus(data.estado || 'pendiente');
+        setNewStatus(data.status || 'pendiente');
       } catch (err) {
         var message =
           (err.response && err.response.data && err.response.data.message) ||
@@ -94,7 +96,7 @@ const InvoiceDetail = () => {
    */
   const handleStatusChange = useCallback(
     async function () {
-      if (!newStatus || newStatus === invoice.estado) {
+      if (!newStatus || newStatus === invoice.status) {
         setStatusModal(false);
         return;
       }
@@ -147,7 +149,7 @@ const InvoiceDetail = () => {
 
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
-      doc.text('Sistema de Gestion Empresarial', 20, 26);
+      doc.text('Sistema de Gestión Empresarial', 20, 26);
       doc.text('NIT: 900.000.000-0 | info@infradigital.com', 20, 33);
 
       // --- Titulo de factura ---
@@ -159,29 +161,29 @@ const InvoiceDetail = () => {
       doc.setTextColor(100, 116, 139);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text('No. ' + (invoice.numero || 'N/A'), pageWidth - 20, 63, { align: 'right' });
+      doc.text('No. ' + (invoice.invoiceNumber || 'N/A'), pageWidth - 20, 63, { align: 'right' });
 
       // --- Informacion de la factura ---
       var infoY = 55;
       doc.setTextColor(51, 65, 85);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-      doc.text('Fecha de emision:', 20, infoY);
+      doc.text('Fecha de emisión:', 20, infoY);
       doc.setFont('helvetica', 'normal');
-      doc.text(formatDate(invoice.fecha || invoice.createdAt), 75, infoY);
+      doc.text(formatDate(invoice.issueDate || invoice.createdAt), 75, infoY);
 
       infoY += 8;
       doc.setFont('helvetica', 'bold');
       doc.text('Estado:', 20, infoY);
       doc.setFont('helvetica', 'normal');
-      doc.text(getStatusLabel(invoice.estado), 75, infoY);
+      doc.text(getStatusLabel(invoice.status), 75, infoY);
 
-      if (invoice.metodoPago) {
+      if (invoice.paymentMethod) {
         infoY += 8;
         doc.setFont('helvetica', 'bold');
-        doc.text('Metodo de pago:', 20, infoY);
+        doc.text('Método de pago:', 20, infoY);
         doc.setFont('helvetica', 'normal');
-        var metodoLabel = invoice.metodoPago.charAt(0).toUpperCase() + invoice.metodoPago.slice(1);
+        var metodoLabel = invoice.paymentMethod.charAt(0).toUpperCase() + invoice.paymentMethod.slice(1);
         doc.text(metodoLabel, 75, infoY);
       }
 
@@ -207,12 +209,12 @@ const InvoiceDetail = () => {
       var clienteTelefono = '';
       var clienteEmail = '';
 
-      if (invoice.cliente) {
-        var cli = typeof invoice.cliente === 'object' ? invoice.cliente : {};
-        clienteNombre = cli.nombre || cli.name || '';
-        clienteNit = cli.nit || cli.documento || '';
-        clienteDireccion = cli.direccion || cli.address || '';
-        clienteTelefono = cli.telefono || cli.phone || '';
+      if (invoice.client) {
+        var cli = typeof invoice.client === 'object' ? invoice.client : {};
+        clienteNombre = cli.name || cli.nombre || '';
+        clienteNit = cli.nit_cc || '';
+        clienteDireccion = cli.address || cli.direccion || '';
+        clienteTelefono = cli.phone || cli.telefono || '';
         clienteEmail = cli.email || '';
       }
 
@@ -238,13 +240,13 @@ const InvoiceDetail = () => {
 
       if (clienteDireccion) {
         doc.setFont('helvetica', 'bold');
-        doc.text('Direccion: ', pageWidth / 2, infoY + 10);
+        doc.text('Dirección: ', pageWidth / 2, infoY + 10);
         doc.setFont('helvetica', 'normal');
         doc.text(clienteDireccion, pageWidth / 2 + 30, infoY + 10);
       }
       if (clienteTelefono) {
         doc.setFont('helvetica', 'bold');
-        doc.text('Telefono: ', pageWidth / 2, infoY + 16);
+        doc.text('Teléfono: ', pageWidth / 2, infoY + 16);
         doc.setFont('helvetica', 'normal');
         doc.text(String(clienteTelefono), pageWidth / 2 + 30, infoY + 16);
       }
@@ -261,21 +263,18 @@ const InvoiceDetail = () => {
       var items = invoice.items || [];
       var tableBody = items.map(function (item, idx) {
         var nombre = '';
-        if (item.producto) {
-          nombre =
-            typeof item.producto === 'object'
-              ? item.producto.nombre || item.producto.name || ''
-              : item.nombre || '';
+        if (item.productName) {
+          nombre = item.productName;
         } else {
-          nombre = item.nombre || item.name || '';
+          nombre = item.productName || item.name || '';
         }
 
         return [
           (idx + 1).toString(),
           nombre,
-          (item.cantidad || 0).toString(),
-          formatCurrency(item.precioUnitario || 0),
-          formatCurrency(item.subtotal || (item.cantidad || 0) * (item.precioUnitario || 0)),
+          (item.quantity || 0).toString(),
+          formatCurrency(item.unitPrice || 0),
+          formatCurrency(item.subtotal || (item.quantity || 0) * (item.unitPrice || 0)),
         ];
       });
 
@@ -330,7 +329,7 @@ const InvoiceDetail = () => {
 
       finalY += 10;
       doc.text('IVA (19%):', totalsX - 5, finalY + 3);
-      doc.text(formatCurrency(invoice.iva || 0), pageWidth - 25, finalY + 3, {
+      doc.text(formatCurrency(invoice.taxAmount || 0), pageWidth - 25, finalY + 3, {
         align: 'right',
       });
 
@@ -349,7 +348,7 @@ const InvoiceDetail = () => {
       });
 
       // --- Notas ---
-      if (invoice.notas) {
+      if (invoice.notes) {
         finalY += 20;
         doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
@@ -357,7 +356,7 @@ const InvoiceDetail = () => {
         doc.text('Notas:', 20, finalY);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100, 116, 139);
-        var splitNotes = doc.splitTextToSize(invoice.notas, pageWidth - 40);
+        var splitNotes = doc.splitTextToSize(invoice.notes, pageWidth - 40);
         doc.text(splitNotes, 20, finalY + 7);
       }
 
@@ -371,20 +370,20 @@ const InvoiceDetail = () => {
       doc.setTextColor(148, 163, 184);
       doc.setFont('helvetica', 'normal');
       doc.text(
-        'Factura generada por InfraDigital - Sistema de Gestion Empresarial para MiPyMEs',
+        'Factura generada por InfraDigital - Sistema de Gestión Empresarial para MiPyMEs',
         pageWidth / 2,
         footerY,
         { align: 'center' }
       );
       doc.text(
-        'Este documento es una representacion impresa de la factura electronica.',
+        'Este documento es una representación impresa de la factura electrónica.',
         pageWidth / 2,
         footerY + 5,
         { align: 'center' }
       );
 
       // --- Descargar ---
-      var filename = 'Factura_' + (invoice.numero || 'sin-numero').replace(/\s/g, '_') + '.pdf';
+      var filename = 'Factura_' + (invoice.invoiceNumber || 'sin-numero').replace(/\s/g, '_') + '.pdf';
       doc.save(filename);
 
       addNotification({
@@ -427,12 +426,12 @@ const InvoiceDetail = () => {
 
   if (!invoice) return null;
 
-  var cliente = invoice.cliente || {};
+  var cliente = invoice.client || {};
   if (typeof cliente === 'string') {
-    cliente = { nombre: cliente };
+    cliente = { name: cliente };
   }
 
-  var statusConfig = getStatusConfig(invoice.estado);
+  var statusConfig = getStatusConfig(invoice.status);
   var items = invoice.items || [];
 
   return (
@@ -453,12 +452,12 @@ const InvoiceDetail = () => {
           <div className="invoice-detail-page__header-info">
             <h1 className="invoice-detail-page__title">
               <FiFileText size={24} />
-              Factura {invoice.numero || 'N/A'}
+              Factura {invoice.invoiceNumber || 'N/A'}
             </h1>
             <div className="invoice-detail-page__meta">
               <span className="invoice-detail-page__date">
                 <FiCalendar size={14} />
-                {formatDateTime(invoice.fecha || invoice.createdAt)}
+                {formatDateTime(invoice.issueDate || invoice.createdAt)}
               </span>
               <span
                 className="invoice-detail-page__status-badge"
@@ -496,20 +495,20 @@ const InvoiceDetail = () => {
       {/* Contenido principal */}
       <div className="invoice-detail-page__content">
         {/* Informacion del cliente */}
-        <Card title="Informacion del Cliente" className="invoice-detail-page__client-card">
+        <Card title="Información del Cliente" className="invoice-detail-page__client-card">
           <div className="invoice-detail-page__client">
             <div className="invoice-detail-page__client-avatar">
               <FiUser size={24} />
             </div>
             <div className="invoice-detail-page__client-data">
               <h3 className="invoice-detail-page__client-name">
-                {cliente.nombre || cliente.name || 'Sin cliente'}
+                {cliente.name || 'Sin cliente'}
               </h3>
               <div className="invoice-detail-page__client-fields">
-                {(cliente.nit || cliente.documento) && (
+                {(cliente.nit_cc) && (
                   <div className="invoice-detail-page__client-field">
                     <FiFileText size={14} />
-                    <span>NIT/CC: {formatNIT(cliente.nit || cliente.documento) || cliente.nit || cliente.documento}</span>
+                    <span>NIT/CC: {formatNIT(cliente.nit_cc) || cliente.nit_cc}</span>
                   </div>
                 )}
                 {cliente.email && (
@@ -518,16 +517,16 @@ const InvoiceDetail = () => {
                     <span>{cliente.email}</span>
                   </div>
                 )}
-                {(cliente.telefono || cliente.phone) && (
+                {(cliente.phone) && (
                   <div className="invoice-detail-page__client-field">
                     <FiPhone size={14} />
-                    <span>{cliente.telefono || cliente.phone}</span>
+                    <span>{cliente.phone}</span>
                   </div>
                 )}
-                {(cliente.direccion || cliente.address) && (
+                {(cliente.address) && (
                   <div className="invoice-detail-page__client-field">
                     <FiMapPin size={14} />
-                    <span>{cliente.direccion || cliente.address}</span>
+                    <span>{cliente.address}</span>
                   </div>
                 )}
               </div>
@@ -557,14 +556,16 @@ const InvoiceDetail = () => {
               <tbody>
                 {items.map(function (item, idx) {
                   var nombre = '';
-                  if (item.producto && typeof item.producto === 'object') {
-                    nombre = item.producto.nombre || item.producto.name || '';
+                  if (item.productName) {
+                    nombre = item.productName;
+                  } else if (item.producto && typeof item.producto === 'object') {
+                    nombre = item.producto.name || '';
                   } else {
-                    nombre = item.nombre || item.name || '';
+                    nombre = item.name || '';
                   }
 
-                  var precio = item.precioUnitario || 0;
-                  var cantidad = item.cantidad || 0;
+                  var precio = item.unitPrice || 0;
+                  var cantidad = item.quantity || 0;
                   var sub = item.subtotal || precio * cantidad;
 
                   return (
@@ -599,7 +600,7 @@ const InvoiceDetail = () => {
             </div>
             <div className="invoice-detail-page__totals-row">
               <span>IVA (19%)</span>
-              <span>{formatCurrency(invoice.iva || 0)}</span>
+              <span>{formatCurrency(invoice.taxAmount || 0)}</span>
             </div>
             <div className="invoice-detail-page__totals-divider"></div>
             <div className="invoice-detail-page__totals-row invoice-detail-page__totals-row--total">
@@ -610,26 +611,26 @@ const InvoiceDetail = () => {
         </Card>
 
         {/* Informacion adicional */}
-        {(invoice.metodoPago || invoice.notas) && (
-          <Card title="Informacion Adicional" className="invoice-detail-page__extra-card">
+        {(invoice.paymentMethod || invoice.notes) && (
+          <Card title="Información Adicional" className="invoice-detail-page__extra-card">
             <div className="invoice-detail-page__extra">
-              {invoice.metodoPago && (
+              {invoice.paymentMethod && (
                 <div className="invoice-detail-page__extra-item">
                   <FiCreditCard size={16} />
                   <div>
-                    <strong>Metodo de Pago</strong>
+                    <strong>Método de Pago</strong>
                     <p>
-                      {invoice.metodoPago.charAt(0).toUpperCase() + invoice.metodoPago.slice(1)}
+                      {invoice.paymentMethod.charAt(0).toUpperCase() + invoice.paymentMethod.slice(1)}
                     </p>
                   </div>
                 </div>
               )}
-              {invoice.notas && (
+              {invoice.notes && (
                 <div className="invoice-detail-page__extra-item">
                   <FiFileText size={16} />
                   <div>
                     <strong>Notas</strong>
-                    <p>{invoice.notas}</p>
+                    <p>{invoice.notes}</p>
                   </div>
                 </div>
               )}
@@ -662,7 +663,7 @@ const InvoiceDetail = () => {
             <button
               className="invoice-detail-page__modal-btn invoice-detail-page__modal-btn--primary"
               onClick={handleStatusChange}
-              disabled={statusLoading || newStatus === invoice.estado}
+              disabled={statusLoading || newStatus === invoice.status}
             >
               {statusLoading ? 'Actualizando...' : 'Actualizar Estado'}
             </button>

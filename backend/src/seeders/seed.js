@@ -6,7 +6,7 @@
 
 require('dotenv').config();
 
-const { sequelize, User, Product, Client, Invoice, InvoiceItem, InventoryMovement } = require('../models');
+const { sequelize, User, Product, Client, Invoice, InvoiceItem, InventoryMovement, Permission } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
@@ -392,12 +392,8 @@ const seed = async () => {
     console.log('\n📌 Creando usuarios...');
     const users = [];
     for (const userData of usersData) {
-      const salt = await bcrypt.genSalt(12);
-      const hashedPassword = await bcrypt.hash(userData.password, salt);
-      const user = await User.scope('withPassword').create({
-        ...userData,
-        password: hashedPassword
-      });
+      // El hook beforeCreate de Sequelize encripta la contraseña automaticamente
+      const user = await User.create(userData);
       users.push(user);
       console.log(`   ✓ Usuario: ${userData.email} (${userData.role})`);
     }
@@ -621,6 +617,31 @@ const seed = async () => {
       console.log(`   ✓ Factura: ${invoiceNumber} | Cliente: ${clients[invoiceData.clientIndex].name} | Total: $${total.toLocaleString('es-CO')} | Estado: ${invoiceData.status}`);
     }
 
+    // ── 5. Crear Permisos por defecto ──────────────────────────────────
+    console.log('\n🔐 Creando permisos por defecto...');
+
+    const permissionsData = [
+      // Admin - acceso completo
+      { role: 'admin', module: 'dashboard', canView: true, canCreate: false, canEdit: false, canDelete: false },
+      { role: 'admin', module: 'inventory', canView: true, canCreate: true, canEdit: true, canDelete: true },
+      { role: 'admin', module: 'invoices', canView: true, canCreate: true, canEdit: true, canDelete: true },
+      { role: 'admin', module: 'clients', canView: true, canCreate: true, canEdit: true, canDelete: true },
+      { role: 'admin', module: 'audit', canView: true, canCreate: false, canEdit: false, canDelete: false },
+      { role: 'admin', module: 'users', canView: true, canCreate: true, canEdit: true, canDelete: true },
+      // User - acceso limitado
+      { role: 'user', module: 'dashboard', canView: true, canCreate: false, canEdit: false, canDelete: false },
+      { role: 'user', module: 'inventory', canView: true, canCreate: true, canEdit: true, canDelete: false },
+      { role: 'user', module: 'invoices', canView: true, canCreate: true, canEdit: false, canDelete: false },
+      { role: 'user', module: 'clients', canView: true, canCreate: true, canEdit: true, canDelete: false },
+      { role: 'user', module: 'audit', canView: true, canCreate: false, canEdit: false, canDelete: false },
+      { role: 'user', module: 'users', canView: false, canCreate: false, canEdit: false, canDelete: false },
+    ];
+
+    for (const perm of permissionsData) {
+      await Permission.create(perm);
+      console.log(`   ✓ Permiso: ${perm.role} → ${perm.module} (ver:${perm.canView} crear:${perm.canCreate} editar:${perm.canEdit} eliminar:${perm.canDelete})`);
+    }
+
     // ── Resumen final ────────────────────────────────────────────────────
     console.log('\n═══════════════════════════════════════════════════');
     console.log('✅ Seed completado exitosamente');
@@ -630,6 +651,7 @@ const seed = async () => {
     console.log(`   • Productos creados: ${productsData.length}`);
     console.log(`   • Clientes creados: ${clientsData.length}`);
     console.log(`   • Facturas creadas: ${invoicesData.length}`);
+    console.log(`   • Permisos creados: ${permissionsData.length}`);
     console.log('');
     console.log('🔑 Credenciales de acceso:');
     console.log('   Admin:    admin@infradigital.co / admin123');

@@ -27,7 +27,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  /*width: 40px;*/
   height: 40px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -260,7 +260,8 @@
 .client-detail__info-value--notes {
   white-space: pre-wrap;
   background-color: var(--bg-primary);
-  padding: var(--space-3);
+  /*padding: var(--space-3);*/
+  padding: 1%;
   border-radius: var(--radius);
   font-size: var(--font-size-sm);
   line-height: 1.6;

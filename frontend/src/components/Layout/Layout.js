@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import ToastContainer from '../common/ToastContainer';
 import { AppContext } from '../../context/AppContext';
 import './Layout.css';
 
@@ -14,6 +15,7 @@ const Layout = () => {
 
   return (
     <div className="layout">
+      <ToastContainer />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div

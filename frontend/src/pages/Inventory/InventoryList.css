@@ -315,31 +315,45 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: none;
-  border-radius: var(--radius);
-  background: transparent;
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #ffffff;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  color: #64748b;
+  flex-shrink: 0;
 }
 
 .inv-action-btn:hover {
   transform: scale(1.1);
 }
 
+.inv-action-btn--stock {
+  color: #059669;
+}
+
 .inv-action-btn--stock:hover {
-  background: var(--info-light);
-  color: var(--info);
+  background: var(--info-light, #ecfdf5);
+  color: #047857;
+}
+
+.inv-action-btn--edit {
+  color: #3b82f6;
 }
 
 .inv-action-btn--edit:hover {
-  background: var(--primary-50);
-  color: var(--primary);
+  background: var(--primary-50, #eff6ff);
+  color: #2563eb;
+}
+
+.inv-action-btn--delete {
+  color: #dc2626;
 }
 
 .inv-action-btn--delete:hover {
-  background: var(--danger-light);
-  color: var(--danger);
+  background: var(--danger-light, #fef2f2);
+  color: #b91c1c;
 }
 
 /* ============================================

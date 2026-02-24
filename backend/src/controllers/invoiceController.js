@@ -6,6 +6,7 @@
 const { Op } = require('sequelize');
 const { sequelize, Invoice, InvoiceItem, Product, Client, User, InventoryMovement } = require('../models');
 const { paginationHelper, generateInvoiceNumber, calculateIVA } = require('../utils/helpers');
+const { logAudit } = require('../utils/auditLogger');
 
 // ── Listar todas las facturas con filtros ────────────────────────────────────
 const getAll = async (req, res, next) => {
@@ -244,13 +245,22 @@ const create = async (req, res, next) => {
       ]
     });
 
+    logAudit({
+      userId: req.user.id,
+      action: 'crear',
+      tableName: 'invoices',
+      recordId: invoice.id,
+      newValues: { invoiceNumber, clientId, total, subtotal: parseFloat(subtotal.toFixed(2)), items: items.length },
+      description: `Creó la factura ${invoiceNumber} por $${total.toLocaleString('es-CO')} para el cliente ${client.name}`,
+      req
+    }).catch(() => {});
+
     res.status(201).json({
       success: true,
       message: `Factura ${invoiceNumber} creada exitosamente.`,
       data: { invoice: fullInvoice }
     });
   } catch (error) {
-    // Revertir transacción en caso de error
     await transaction.rollback();
     next(error);
   }
@@ -283,7 +293,8 @@ const updateStatus = async (req, res, next) => {
       });
     }
 
-    // Si se anula la factura, devolver el stock de los productos
+    const oldStatus = invoice.status;
+
     if (status === 'anulada' && invoice.status !== 'anulada') {
       const transaction = await sequelize.transaction();
       try {
@@ -325,6 +336,17 @@ const updateStatus = async (req, res, next) => {
         { model: User, as: 'user', attributes: ['id', 'name'] }
       ]
     });
+
+    logAudit({
+      userId: req.user.id,
+      action: 'cambiar_estado',
+      tableName: 'invoices',
+      recordId: invoice.id,
+      previousValues: { status: oldStatus },
+      newValues: { status },
+      description: `Cambió estado de factura ${invoice.invoiceNumber} de "${oldStatus}" a "${status}"`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,

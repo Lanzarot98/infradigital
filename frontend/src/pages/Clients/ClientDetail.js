@@ -69,7 +69,9 @@ const ClientDetail = () => {
 
     try {
       const response = await clientService.getById(id);
-      const data = response.data.client || response.data;
+      var responseData = response.data;
+      var innerData = responseData.data || responseData;
+      const data = innerData.client || innerData;
       setClient(data);
     } catch (err) {
       console.error('Error al cargar cliente:', err);
@@ -86,18 +88,19 @@ const ClientDetail = () => {
     setInvoicesLoading(true);
 
     try {
-      // Try using getPurchaseHistory from clientService
-      const response = await clientService.getPurchaseHistory(id);
-      const data = response.data;
+      const response = await invoiceService.getByClient(id);
+      var responseData = response.data;
+      var innerInvData = responseData.data || responseData;
 
       let allInvoices = [];
-      if (data.invoices) {
-        allInvoices = data.invoices;
-      } else if (data.purchases) {
-        allInvoices = data.purchases;
-      } else if (Array.isArray(data)) {
-        allInvoices = data;
+      if (innerInvData.invoices) {
+        allInvoices = innerInvData.invoices;
+      } else if (innerInvData.purchases) {
+        allInvoices = innerInvData.purchases;
+      } else if (Array.isArray(innerInvData)) {
+        allInvoices = innerInvData;
       }
+      if (!Array.isArray(allInvoices)) allInvoices = [];
 
       // Calculate summary
       const total = allInvoices.length;
@@ -109,9 +112,9 @@ const ClientDetail = () => {
       let ultimaCompra = null;
       if (allInvoices.length > 0) {
         const sorted = [...allInvoices].sort((a, b) => {
-          return new Date(b.fecha || b.createdAt) - new Date(a.fecha || a.createdAt);
+          return new Date(b.date || b.fecha || b.createdAt) - new Date(a.date || a.fecha || a.createdAt);
         });
-        ultimaCompra = sorted[0].fecha || sorted[0].createdAt;
+        ultimaCompra = sorted[0].date || sorted[0].fecha || sorted[0].createdAt;
       }
 
       setPurchaseSummary({
@@ -168,7 +171,7 @@ const ClientDetail = () => {
       addNotification({
         type: 'success',
         title: 'Cliente eliminado',
-        message: 'El cliente "' + (client ? client.nombre : '') + '" fue eliminado correctamente.',
+        message: 'El cliente "' + (client ? client.name : '') + '" fue eliminado correctamente.',
       });
       navigate('/clients');
     } catch (err) {
@@ -193,7 +196,7 @@ const ClientDetail = () => {
    */
   const handleInvoiceClick = useCallback(
     (invoice) => {
-      navigate('/invoices/' + (invoice._id || invoice.id));
+      navigate('/invoices/' + (invoice.id || invoice._id));
     },
     [navigate]
   );
@@ -201,16 +204,16 @@ const ClientDetail = () => {
   /**
    * Get type badge classes
    */
-  const getTypeLabel = (tipo) => {
-    if (tipo === 'natural' || tipo === 'Persona Natural') return 'Persona Natural';
-    if (tipo === 'juridica' || tipo === 'Persona Jurídica') return 'Persona Jurídica';
-    return tipo || 'N/A';
+  const getTypeLabel = (type) => {
+    if (type === 'persona_natural') return 'Persona Natural';
+    if (type === 'persona_juridica') return 'Persona Jurídica';
+    return type || 'N/A';
   };
 
-  const getTypeBadgeClass = (tipo) => {
-    if (tipo === 'natural' || tipo === 'Persona Natural')
+  const getTypeBadgeClass = (type) => {
+    if (type === 'persona_natural')
       return 'client-detail__type-badge--natural';
-    if (tipo === 'juridica' || tipo === 'Persona Jurídica')
+    if (type === 'persona_juridica')
       return 'client-detail__type-badge--juridica';
     return '';
   };
@@ -220,11 +223,11 @@ const ClientDetail = () => {
    */
   const invoiceColumns = [
     {
-      key: 'numero',
+      key: 'invoiceNumber',
       label: 'Nro. Factura',
       render: (value, row) => (
         <Link
-          to={'/invoices/' + (row._id || row.id)}
+          to={'/invoices/' + (row.id || row._id)}
           style={{
             color: 'var(--primary-light)',
             fontWeight: 'var(--font-weight-medium)',
@@ -232,14 +235,14 @@ const ClientDetail = () => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {value || row.numeroFactura || 'N/A'}
+          {value || row.numero || row.numeroFactura || 'N/A'}
         </Link>
       ),
     },
     {
-      key: 'fecha',
+      key: 'date',
       label: 'Fecha',
-      render: (value, row) => formatDate(value || row.createdAt) || '—',
+      render: (value, row) => formatDate(value || row.fecha || row.createdAt) || '—',
     },
     {
       key: 'total',
@@ -251,10 +254,10 @@ const ClientDetail = () => {
       ),
     },
     {
-      key: 'estado',
+      key: 'status',
       label: 'Estado',
       render: (value, row) => {
-        const status = value || row.status || 'pendiente';
+        const status = value || row.estado || 'pendiente';
         const config = getStatusConfig(status);
         return (
           <span
@@ -340,24 +343,24 @@ const ClientDetail = () => {
           </button>
           <div className="client-detail__title-area">
             <h2>
-              {client.nombre || 'Sin nombre'}
+              {client.name || 'Sin nombre'}
               <span
                 className={
-                  'client-detail__type-badge ' + getTypeBadgeClass(client.tipo)
+                  'client-detail__type-badge ' + getTypeBadgeClass(client.type)
                 }
               >
-                {getTypeLabel(client.tipo)}
+                {getTypeLabel(client.type)}
               </span>
             </h2>
             <p className="client-detail__nit-label">
-              NIT/CC: {client.nit ? formatNIT(client.nit) : 'No registrado'}
+              NIT/CC: {client.nit_cc ? formatNIT(client.nit_cc) : 'No registrado'}
             </p>
           </div>
         </div>
 
         <div className="client-detail__header-actions">
           <Link
-            to={'/clients/edit/' + client._id}
+            to={'/clients/edit/' + (client.id || client._id)}
             className="btn btn-outline"
           >
             <FiEdit size={16} />
@@ -392,7 +395,7 @@ const ClientDetail = () => {
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">Dirección</span>
             <span className="client-detail__info-value">
-              {client.direccion || (
+              {client.address || (
                 <span className="client-detail__info-value--empty">No registrada</span>
               )}
             </span>
@@ -401,8 +404,8 @@ const ClientDetail = () => {
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">Teléfono</span>
             <span className="client-detail__info-value">
-              {client.telefono ? (
-                <a href={'tel:' + client.telefono}>{formatPhone(client.telefono)}</a>
+              {client.phone ? (
+                <a href={'tel:' + client.phone}>{formatPhone(client.phone)}</a>
               ) : (
                 <span className="client-detail__info-value--empty">No registrado</span>
               )}
@@ -412,7 +415,7 @@ const ClientDetail = () => {
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">Ciudad</span>
             <span className="client-detail__info-value">
-              {client.ciudad || (
+              {client.city || (
                 <span className="client-detail__info-value--empty">No registrada</span>
               )}
             </span>
@@ -421,7 +424,7 @@ const ClientDetail = () => {
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">NIT / Cédula</span>
             <span className="client-detail__info-value">
-              {client.nit ? formatNIT(client.nit) : (
+              {client.nit_cc ? formatNIT(client.nit_cc) : (
                 <span className="client-detail__info-value--empty">No registrado</span>
               )}
             </span>
@@ -430,7 +433,7 @@ const ClientDetail = () => {
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">Fecha de Registro</span>
             <span className="client-detail__info-value">
-              {formatDateTime(client.createdAt || client.fechaCreacion) || (
+              {formatDateTime(client.createdAt) || (
                 <span className="client-detail__info-value--empty">No disponible</span>
               )}
             </span>
@@ -439,15 +442,15 @@ const ClientDetail = () => {
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">Tipo de Persona</span>
             <span className="client-detail__info-value">
-              {getTypeLabel(client.tipo)}
+              {getTypeLabel(client.type)}
             </span>
           </div>
 
           <div className="client-detail__info-item">
             <span className="client-detail__info-label">Notas</span>
             <span className="client-detail__info-value">
-              {client.notas ? (
-                <span className="client-detail__info-value--notes">{client.notas}</span>
+              {client.notes ? (
+                <span className="client-detail__info-value--notes">{client.notes}</span>
               ) : (
                 <span className="client-detail__info-value--empty">Sin notas</span>
               )}
@@ -554,7 +557,7 @@ const ClientDetail = () => {
         <p className="client-detail__delete-message">
           ¿Estás seguro de que deseas eliminar al cliente{' '}
           <span className="client-detail__delete-name">
-            "{client.nombre}"
+            "{client.name || ''}"
           </span>
           ? Esta acción no se puede deshacer y se perderá todo su historial.
         </p>

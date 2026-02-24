@@ -10,6 +10,8 @@ const Client = require('./Client');
 const Invoice = require('./Invoice');
 const InvoiceItem = require('./InvoiceItem');
 const InventoryMovement = require('./InventoryMovement');
+const AuditLog = require('./AuditLog');
+const Permission = require('./Permission');
 
 // ══════════════════════════════════════════════════════════════════════════════
 // DEFINICIÓN DE ASOCIACIONES (RELACIONES ENTRE MODELOS)
@@ -83,6 +85,16 @@ InventoryMovement.belongsTo(User, {
   as: 'user'
 });
 
+// ── Usuario → Registros de Auditoría ─────────────────────────────────────────
+User.hasMany(AuditLog, {
+  foreignKey: 'userId',
+  as: 'auditLogs'
+});
+AuditLog.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 // EXPORTAR MODELOS E INSTANCIA DE SEQUELIZE
 // ══════════════════════════════════════════════════════════════════════════════
@@ -94,5 +106,7 @@ module.exports = {
   Client,
   Invoice,
   InvoiceItem,
-  InventoryMovement
+  InventoryMovement,
+  AuditLog,
+  Permission
 };

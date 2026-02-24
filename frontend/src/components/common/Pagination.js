@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './Pagination.css';
 
@@ -41,7 +41,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   return (
     <div className="pagination">
       <span className="pagination__info">
-        P\u00e1gina {currentPage} de {totalPages}
+        Página {currentPage} de {totalPages}
       </span>
 
       <div className="pagination__controls">
@@ -49,7 +49,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           className="pagination__btn pagination__btn--nav"
           onClick={function() { onPageChange(currentPage - 1); }}
           disabled={currentPage <= 1}
-          aria-label="P\u00e1gina anterior"
+          aria-label="Página anterior"
         >
           <FiChevronLeft size={18} />
           <span className="pagination__btn-text">Anterior</span>
@@ -74,7 +74,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 className={btnClass}
                 onClick={function() { onPageChange(page); }}
                 disabled={isActive}
-                aria-label={'Ir a p\u00e1gina ' + page}
+                aria-label={'Ir a página ' + page}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {page}
@@ -87,7 +87,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           className="pagination__btn pagination__btn--nav"
           onClick={function() { onPageChange(currentPage + 1); }}
           disabled={currentPage >= totalPages}
-          aria-label="P\u00e1gina siguiente"
+          aria-label="Página siguiente"
         >
           <span className="pagination__btn-text">Siguiente</span>
           <FiChevronRight size={18} />

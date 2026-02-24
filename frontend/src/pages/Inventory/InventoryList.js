@@ -119,8 +119,10 @@ var InventoryList = function () {
           response = await productService.getAll(params);
         }
 
-        var data = response.data;
-        var productList = data.products || data.data || [];
+        var responseData = response.data;
+        var data = responseData.data || responseData;
+        var productList = data.products || data.alerts || [];
+        if (!Array.isArray(productList)) productList = [];
         var pagination = data.pagination || {};
 
         setProducts(productList);
@@ -128,14 +130,14 @@ var InventoryList = function () {
 
         /* Calcular estadísticas */
         var lowStockCount = productList.filter(function (p) {
-          var minStock = p.minStock || p.stockMinimo || 0;
+          var minStock = p.minStock || 0;
           return p.stock <= minStock;
         }).length;
 
         var totalValue = productList.reduce(function (sum, p) {
-          var precio = p.precio || p.price || 0;
+          var price = p.price || 0;
           var stock = p.stock || 0;
-          return sum + precio * stock;
+          return sum + price * stock;
         }, 0);
 
         setStats({
@@ -184,7 +186,7 @@ var InventoryList = function () {
         title: 'Producto eliminado',
         message:
           'El producto "' +
-          deleteModal.product.nombre +
+          (deleteModal.product.name || '') +
           '" fue eliminado correctamente.',
       });
 
@@ -215,10 +217,10 @@ var InventoryList = function () {
 
     try {
       var productId = stockModal.product._id || stockModal.product.id;
-      await productService.updateStock(productId, {
-        cantidad: Number(stockForm.cantidad),
-        tipo: stockForm.tipo,
-        motivo: stockForm.motivo,
+      await productService.adjustStock(productId, {
+        quantity: Number(stockForm.cantidad),
+        type: stockForm.tipo,
+        reason: stockForm.motivo,
       });
 
       addNotification({
@@ -226,7 +228,7 @@ var InventoryList = function () {
         title: 'Stock actualizado',
         message:
           'El stock de "' +
-          stockModal.product.nombre +
+          (stockModal.product.name || '') +
           '" fue actualizado correctamente.',
       });
 
@@ -271,14 +273,14 @@ var InventoryList = function () {
       },
     },
     {
-      key: 'nombre',
+      key: 'name',
       label: 'Nombre',
       render: function (val) {
         return <span className="inv-product-name">{val}</span>;
       },
     },
     {
-      key: 'categoria',
+      key: 'category',
       label: 'Categoría',
       render: function (val) {
         return (
@@ -292,7 +294,7 @@ var InventoryList = function () {
       key: 'stock',
       label: 'Stock',
       render: function (val, row) {
-        var minStock = row.minStock || row.stockMinimo || 0;
+        var minStock = row.minStock || 0;
         var isLow = val <= minStock;
         var badgeClass =
           'inv-stock-badge' +
@@ -301,21 +303,21 @@ var InventoryList = function () {
       },
     },
     {
-      key: 'stockMinimo',
+      key: 'minStock',
       label: 'Stock Mín.',
-      render: function (val, row) {
-        return val || row.minStock || 0;
+      render: function (val) {
+        return val != null ? val : 0;
       },
     },
     {
-      key: 'precio',
+      key: 'price',
       label: 'Precio',
       render: function (val) {
         return formatCurrency(val);
       },
     },
     {
-      key: 'costo',
+      key: 'cost',
       label: 'Costo',
       render: function (val) {
         return formatCurrency(val);
@@ -326,7 +328,7 @@ var InventoryList = function () {
       label: 'Estado',
       render: function (val, row) {
         var stock = row.stock || 0;
-        var minStock = row.minStock || row.stockMinimo || 0;
+        var minStock = row.minStock || 0;
 
         if (stock === 0) {
           return (
@@ -494,7 +496,6 @@ var InventoryList = function () {
             <Table
               columns={columns}
               data={products}
-              onRowClick={handleRowClick}
               emptyMessage="No se encontraron productos. Intenta ajustar los filtros o crea un nuevo producto."
               loading={false}
             />
@@ -547,7 +548,7 @@ var InventoryList = function () {
             ¿Estás seguro de que deseas eliminar el producto
             <strong>
               {' '}
-              &quot;{deleteModal.product ? deleteModal.product.nombre : ''}&quot;
+              &quot;{deleteModal.product ? (deleteModal.product.name || '') : ''}&quot;
             </strong>
             ?
           </p>
@@ -594,7 +595,7 @@ var InventoryList = function () {
           {stockModal.product && (
             <div className="inv-stock-product-info">
               <span className="inv-stock-product-name">
-                Producto: <strong>{stockModal.product.nombre}</strong>
+                Producto: <strong>{stockModal.product.name || ''}</strong>
               </span>
               <span className="inv-stock-current">
                 Stock actual: {stockModal.product.stock}

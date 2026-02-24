@@ -17,7 +17,11 @@ root.render(
   </React.StrictMode>
 );
 
-// Registrar Service Worker para funcionalidad PWA y modo offline
+// En desarrollo, desregistrar Service Workers previos para evitar problemas de cache
+// En produccion, cambiar a serviceWorkerRegistration.register()
+serviceWorkerRegistration.unregister();
+
+/*
 serviceWorkerRegistration.register({
   onUpdate: (registration) => {
     // Notificar al usuario que hay una nueva versión disponible
@@ -33,6 +37,7 @@ serviceWorkerRegistration.register({
     console.log('InfraDigital: Aplicación lista para uso sin conexión.');
   },
 });
+*/
 
 // Medir métricas de rendimiento (opcional: enviar a servicio de analíticas)
 function sendToAnalytics(metric) {

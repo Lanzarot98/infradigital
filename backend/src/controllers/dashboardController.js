@@ -96,25 +96,21 @@ const getTopProducts = async (req, res, next) => {
   try {
     const limitCount = parseInt(req.query.limit, 10) || 10;
 
-    const topProducts = await InvoiceItem.findAll({
-      attributes: [
-        'productId',
-        'productName',
-        [fn('SUM', col('quantity')), 'totalQuantity'],
-        [fn('SUM', col('subtotal')), 'totalRevenue']
-      ],
-      include: [
-        {
-          model: Invoice,
-          as: 'invoice',
-          attributes: [],
-          where: { status: { [Op.ne]: 'anulada' } }
-        }
-      ],
-      group: ['productId', 'productName'],
-      order: [[fn('SUM', col('quantity')), 'DESC']],
-      limit: limitCount,
-      raw: true
+    const topProducts = await sequelize.query(`
+      SELECT
+        ii.product_id AS "productId",
+        ii.product_name AS "productName",
+        SUM(ii.quantity) AS "totalQuantity",
+        SUM(ii.subtotal) AS "totalRevenue"
+      FROM invoice_items ii
+      INNER JOIN invoices i ON ii.invoice_id = i.id
+      WHERE i.status != 'anulada'
+      GROUP BY ii.product_id, ii.product_name
+      ORDER BY SUM(ii.quantity) DESC
+      LIMIT :limitCount
+    `, {
+      replacements: { limitCount },
+      type: sequelize.QueryTypes.SELECT
     });
 
     res.json({

@@ -1,5 +1,6 @@
 /* ============================================
-   InfraDigital - Página de Login
+   InfraDigital - Pagina de Login
+   Diseño moderno con tarjeta blanca sobre fondo azul
    ============================================ */
 
 .login-page {
@@ -7,8 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #3b82f6 70%, #60a5fa 100%);
-  padding: var(--space-4);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 40%, #2563eb 100%);
+  padding: 1.5rem;
   position: relative;
   overflow: hidden;
 }
@@ -24,7 +25,7 @@
 .login-page__shape {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.07;
+  opacity: 0.06;
   background: #ffffff;
 }
 
@@ -62,32 +63,34 @@
 
 /* --- Tarjeta de login --- */
 .login-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl), 0 0 80px rgba(0, 0, 0, 0.12);
-  padding: var(--space-10);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 2.5rem;
   animation: authSlideUp 0.5s ease;
 }
 
 /* --- Cabecera con logo --- */
 .login-header {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: 2rem;
 }
 
 .login-logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-2);
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .login-logo-icon {
   width: 56px;
   height: 56px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,68 +98,66 @@
 }
 
 .login-logo-icon span {
-  color: var(--text-white);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-xl);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.25rem;
   letter-spacing: 1px;
 }
 
 .login-brand {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
 .login-subtitle {
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
+  color: #64748b;
+  font-size: 0.875rem;
   margin: 0;
 }
 
 /* --- Alerta de error --- */
 .login-alert {
-  margin-bottom: var(--space-4);
+  margin-bottom: 1rem;
 }
 
 /* --- Formulario --- */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: 1.25rem;
 }
 
 /* --- Pie de la tarjeta --- */
 .login-footer {
   text-align: center;
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--border-light);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
 }
 
 .login-footer p {
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
+  color: #64748b;
+  font-size: 0.875rem;
   margin: 0;
 }
 
 /* ============================================
-   Estilos compartidos de autenticación (auth-*)
-   Usados por Login y Register
+   Estilos compartidos auth-* (Login y Register)
    ============================================ */
 
-/* --- Grupo de campo --- */
 .auth-form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0.375rem;
 }
 
 .auth-form-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
 }
 
 /* --- Input con icono --- */
@@ -169,80 +170,81 @@
 .auth-input-icon {
   position: absolute;
   left: 14px;
-  color: var(--text-light);
+  color: #94a3b8;
   pointer-events: none;
-  transition: color var(--transition-fast);
+  transition: color 0.15s ease;
   z-index: 1;
 }
 
 .auth-form-input {
   width: 100%;
   padding: 12px 14px 12px 44px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family);
-  color: var(--text-primary);
-  background: var(--bg-secondary);
-  transition: all var(--transition-fast);
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: all 0.15s ease;
   outline: none;
   box-sizing: border-box;
 }
 
 .auth-form-input::placeholder {
-  color: var(--text-light);
+  color: #94a3b8;
 }
 
 .auth-form-input:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
 .auth-input-wrapper:focus-within .auth-input-icon {
-  color: var(--primary-light);
+  color: #3b82f6;
 }
 
 .auth-form-input:disabled {
-  background: var(--border-light);
+  background: #f1f5f9;
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .auth-form-input--error {
-  border-color: var(--danger);
+  border-color: #ef4444;
 }
 
 .auth-form-input--error:focus {
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
 }
 
-/* --- Error de campo --- */
 .auth-field-error {
-  font-size: var(--font-size-xs);
-  color: var(--danger);
+  font-size: 0.75rem;
+  color: #ef4444;
   margin-top: 2px;
 }
 
-/* --- Botón de envío --- */
+/* --- Boton de envio --- */
 .auth-submit-btn {
   width: 100%;
-  padding: 12px 24px;
+  padding: 13px 24px;
   border: none;
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  color: var(--text-white);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-family);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  margin-top: var(--space-2);
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
   box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
 }
 
 .auth-submit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
 }
 
 .auth-submit-btn:active:not(:disabled) {
@@ -250,7 +252,7 @@
 }
 
 .auth-submit-btn:disabled {
-  opacity: 0.65;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
@@ -260,7 +262,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 /* --- Spinner --- */
@@ -276,33 +278,32 @@
 
 /* --- Enlace --- */
 .auth-link {
-  color: var(--primary-light);
+  color: #2563eb;
   text-decoration: none;
-  font-weight: var(--font-weight-semibold);
-  transition: color var(--transition-fast);
+  font-weight: 600;
+  transition: color 0.15s ease;
 }
 
 .auth-link:hover {
-  color: var(--primary);
+  color: #1e40af;
   text-decoration: underline;
 }
 
 /* --- Copyright --- */
 .auth-copyright {
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: var(--font-size-xs);
-  margin-top: var(--space-6);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 /* ============================================
    Animaciones
    ============================================ */
-
 @keyframes authSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -334,11 +335,16 @@
 /* ============================================
    Responsive
    ============================================ */
-
 @media (max-width: 480px) {
+  .login-page {
+    padding: 1rem;
+    align-items: flex-start;
+    padding-top: 3rem;
+  }
+
   .login-card {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    border-radius: 14px;
   }
 
   .login-logo-icon {
@@ -347,10 +353,20 @@
   }
 
   .login-brand {
-    font-size: var(--font-size-xl);
+    font-size: 1.5rem;
   }
 
   .login-subtitle {
-    font-size: var(--font-size-xs);
+    font-size: 0.8rem;
+  }
+
+  .auth-form-input {
+    padding: 11px 12px 11px 40px;
+    font-size: 0.9rem;
+  }
+
+  .auth-submit-btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
   }
 }

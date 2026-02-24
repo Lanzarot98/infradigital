@@ -41,6 +41,7 @@ const InvoiceCreate = () => {
 
   // Busqueda de clientes
   const [clientSearch, setClientSearch] = useState('');
+  const [allClients, setAllClients] = useState([]);
   const [clientResults, setClientResults] = useState([]);
   const [clientSearchLoading, setClientSearchLoading] = useState(false);
   const [showClientDropdown, setShowClientDropdown] = useState(false);
@@ -59,6 +60,34 @@ const InvoiceCreate = () => {
   const [errors, setErrors] = useState({});
 
   /**
+   * Cargar todos los clientes al montar
+   */
+  useEffect(function () {
+    var cancelled = false;
+    setClientSearchLoading(true);
+    (async function () {
+      try {
+        var response = await clientService.getAll({ limit: 500 });
+        if (cancelled) return;
+        var responseData = response.data;
+        var innerData = responseData.data || responseData;
+        var clients = innerData.clients || [];
+        if (!Array.isArray(clients)) clients = [];
+        setAllClients(clients);
+        setClientResults(clients);
+      } catch (err) {
+        if (!cancelled) {
+          setAllClients([]);
+          setClientResults([]);
+        }
+      } finally {
+        if (!cancelled) setClientSearchLoading(false);
+      }
+    })();
+    return function () { cancelled = true; };
+  }, []);
+
+  /**
    * Cerrar dropdowns al hacer clic fuera
    */
   useEffect(function () {
@@ -74,36 +103,27 @@ const InvoiceCreate = () => {
   }, []);
 
   /**
-   * Buscar clientes
+   * Filtrar clientes localmente
    */
   const searchClients = useCallback(
     function (query) {
-      if (clientSearchTimeout.current) {
-        clearTimeout(clientSearchTimeout.current);
-      }
-
-      if (!query || query.length < 2) {
-        setClientResults([]);
-        setShowClientDropdown(false);
+      if (!query || query.trim() === '') {
+        setClientResults(allClients);
+        setShowClientDropdown(true);
         return;
       }
 
-      setClientSearchLoading(true);
-      clientSearchTimeout.current = setTimeout(async function () {
-        try {
-          var response = await clientService.getAll({ search: query, limit: 10 });
-          var data = response.data;
-          var clients = data.clients || data.data || [];
-          setClientResults(clients);
-          setShowClientDropdown(true);
-        } catch (err) {
-          setClientResults([]);
-        } finally {
-          setClientSearchLoading(false);
-        }
-      }, 300);
+      var q = query.toLowerCase();
+      var filtered = allClients.filter(function (c) {
+        var name = (c.name || c.nombre || '').toLowerCase();
+        var nit = (c.nit_cc || '').toLowerCase();
+        var email = (c.email || '').toLowerCase();
+        return name.indexOf(q) !== -1 || nit.indexOf(q) !== -1 || email.indexOf(q) !== -1;
+      });
+      setClientResults(filtered);
+      setShowClientDropdown(true);
     },
-    [token]
+    [allClients]
   );
 
   /**
@@ -111,7 +131,7 @@ const InvoiceCreate = () => {
    */
   const handleSelectClient = useCallback(function (client) {
     setSelectedClient(client);
-    setClientSearch(client.nombre || client.name || '');
+    setClientSearch(client.name || client.nombre || '');
     setShowClientDropdown(false);
     setErrors(function (prev) {
       var next = { ...prev };
@@ -161,8 +181,10 @@ const InvoiceCreate = () => {
       productSearchTimeout.current[key] = setTimeout(async function () {
         try {
           var response = await productService.getAll({ search: query, limit: 10 });
-          var data = response.data;
-          var products = data.products || data.data || [];
+          var responseData = response.data;
+          var innerData = responseData.data || responseData;
+          var products = innerData.products || [];
+          if (!Array.isArray(products)) products = [];
           setProductResults(function (prev) {
             return { ...prev, [key]: products };
           });
@@ -229,11 +251,11 @@ const InvoiceCreate = () => {
     setItems(function (prev) {
       var updated = [...prev];
       var cantidad = updated[index].cantidad || 1;
-      var precio = product.precio || product.price || 0;
+      var precio = product.price || product.precio || 0;
       updated[index] = {
         ...updated[index],
         producto: product,
-        productSearch: product.nombre || product.name || '',
+        productSearch: product.name || product.nombre || '',
         precioUnitario: precio,
         subtotal: cantidad * precio,
       };
@@ -353,25 +375,22 @@ const InvoiceCreate = () => {
 
       try {
         var invoiceData = {
-          cliente: selectedClient._id,
+          clientId: String(selectedClient.id || selectedClient._id),
           items: items.map(function (item) {
             return {
-              producto: item.producto._id,
-              nombre: item.producto.nombre || item.producto.name,
-              cantidad: item.cantidad,
-              precioUnitario: item.precioUnitario,
-              subtotal: item.subtotal,
+              productId: String(item.producto.id || item.producto._id),
+              quantity: parseInt(item.cantidad, 10) || 1,
+              unitPrice: parseFloat(item.precioUnitario) || 0,
             };
           }),
-          subtotal: totals.subtotal,
-          iva: totals.iva,
-          total: totals.total,
-          metodoPago: paymentMethod,
-          notas: notes,
+          paymentMethod: paymentMethod,
+          notes: notes || '',
         };
 
         var response = await invoiceService.create(invoiceData);
-        var created = response.data.invoice || response.data;
+        var responseData = response.data;
+        var innerData = responseData.data || responseData;
+        var created = innerData.invoice || innerData;
 
         addNotification({
           type: 'success',
@@ -379,7 +398,7 @@ const InvoiceCreate = () => {
           message: 'La factura ha sido creada exitosamente.',
         });
 
-        navigate('/invoices/' + (created._id || created.id));
+        navigate('/invoices/' + (created.id || created._id));
       } catch (err) {
         var message =
           (err.response && err.response.data && err.response.data.message) ||
@@ -422,7 +441,7 @@ const InvoiceCreate = () => {
 
       <form onSubmit={handleSubmit} className="invoice-create-page__form">
         {/* Seleccion de cliente */}
-        <Card title="Informacion del Cliente" className="invoice-create-page__section">
+        <Card title="Información del Cliente" className="invoice-create-page__section">
           <div className="invoice-create-page__client-section">
             {selectedClient ? (
               <div className="invoice-create-page__client-selected">
@@ -432,16 +451,16 @@ const InvoiceCreate = () => {
                   </div>
                   <div className="invoice-create-page__client-details">
                     <h4 className="invoice-create-page__client-name">
-                      {selectedClient.nombre || selectedClient.name}
+                      {selectedClient.name || selectedClient.nombre}
                     </h4>
                     <p className="invoice-create-page__client-meta">
-                      {selectedClient.nit && <span>NIT: {selectedClient.nit}</span>}
+                      {selectedClient.nit_cc && <span>NIT: {selectedClient.nit_cc}</span>}
                       {selectedClient.email && <span>{selectedClient.email}</span>}
-                      {selectedClient.telefono && <span>Tel: {selectedClient.telefono}</span>}
+                      {selectedClient.phone && <span>Tel: {selectedClient.phone}</span>}
                     </p>
-                    {selectedClient.direccion && (
+                    {selectedClient.address && (
                       <p className="invoice-create-page__client-address">
-                        {selectedClient.direccion}
+                        {selectedClient.address}
                       </p>
                     )}
                   </div>
@@ -472,9 +491,10 @@ const InvoiceCreate = () => {
                       searchClients(e.target.value);
                     }}
                     onFocus={function () {
-                      if (clientResults.length > 0) {
-                        setShowClientDropdown(true);
+                      if (clientSearch.trim() === '') {
+                        setClientResults(allClients);
                       }
+                      setShowClientDropdown(true);
                     }}
                   />
                   {clientSearchLoading && (
@@ -492,7 +512,7 @@ const InvoiceCreate = () => {
                     {clientResults.map(function (client) {
                       return (
                         <li
-                          key={client._id}
+                          key={client.id || client._id}
                           className="invoice-create-page__dropdown-item"
                           onClick={function () {
                             handleSelectClient(client);
@@ -500,10 +520,10 @@ const InvoiceCreate = () => {
                         >
                           <div className="invoice-create-page__dropdown-item-main">
                             <FiUser size={14} />
-                            <span>{client.nombre || client.name}</span>
+                            <span>{client.name || client.nombre}</span>
                           </div>
                           <span className="invoice-create-page__dropdown-item-sub">
-                            {client.nit || client.email || ''}
+                            {client.nit_cc || client.email || ''}
                           </span>
                         </li>
                       );
@@ -512,7 +532,6 @@ const InvoiceCreate = () => {
                 )}
 
                 {showClientDropdown &&
-                  clientSearch.length >= 2 &&
                   clientResults.length === 0 &&
                   !clientSearchLoading && (
                     <div className="invoice-create-page__dropdown invoice-create-page__dropdown--empty">
@@ -598,7 +617,7 @@ const InvoiceCreate = () => {
                             {item.producto ? (
                               <div className="invoice-create-page__product-selected-cell">
                                 <span className="invoice-create-page__product-name-cell">
-                                  {item.producto.nombre || item.producto.name}
+                                  {item.producto.name || item.producto.nombre}
                                 </span>
                                 <button
                                   type="button"
@@ -658,7 +677,7 @@ const InvoiceCreate = () => {
                                       {productResults[rowKey].map(function (product) {
                                         return (
                                           <li
-                                            key={product._id}
+                                            key={product.id || product._id}
                                             className="invoice-create-page__product-dropdown-item"
                                             onClick={function () {
                                               handleSelectProduct(index, product);
@@ -670,10 +689,10 @@ const InvoiceCreate = () => {
                                             }}
                                           >
                                             <span className="invoice-create-page__product-dropdown-name">
-                                              {product.nombre || product.name}
+                                              {product.name || product.nombre}
                                             </span>
                                             <span className="invoice-create-page__product-dropdown-price">
-                                              {formatCurrency(product.precio || product.price || 0)}
+                                              {formatCurrency(product.price || product.precio || 0)}
                                             </span>
                                           </li>
                                         );
@@ -741,7 +760,7 @@ const InvoiceCreate = () => {
           <Card title="Opciones" className="invoice-create-page__options-card">
             <div className="invoice-create-page__options">
               <div className="invoice-create-page__field">
-                <label className="invoice-create-page__label">Metodo de Pago</label>
+                <label className="invoice-create-page__label">Método de Pago</label>
                 <select
                   className="invoice-create-page__select"
                   value={paymentMethod}

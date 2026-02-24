@@ -98,7 +98,7 @@ npm run seed
 ```
 
 Esto creará:
-- 2 usuarios (admin@infradigital.com / admin123, usuario@infradigital.com / user123)
+- 2 usuarios (admin@infradigital.co / admin123, maria@infradigital.co / maria123)
 - 18 productos típicos de negocio colombiano
 - 10 clientes de ejemplo
 - 10 facturas con ítems
@@ -141,8 +141,8 @@ La aplicación estará disponible en `http://localhost:3000`
 
 | Rol | Email | Contraseña |
 |-----|-------|------------|
-| Administrador | admin@infradigital.com | admin123 |
-| Usuario | usuario@infradigital.com | user123 |
+| Administrador | admin@infradigital.co | admin123 |
+| Usuario | maria@infradigital.co | maria123 |
 
 ## Estructura del Proyecto
 

@@ -6,6 +6,7 @@
 const { Op, fn, col, literal } = require('sequelize');
 const { Client, Invoice, InvoiceItem } = require('../models');
 const { paginationHelper } = require('../utils/helpers');
+const { logAudit } = require('../utils/auditLogger');
 
 // ── Listar todos los clientes con filtros ────────────────────────────────────
 const getAll = async (req, res, next) => {
@@ -119,6 +120,16 @@ const create = async (req, res, next) => {
       notes
     });
 
+    logAudit({
+      userId: req.user.id,
+      action: 'crear',
+      tableName: 'clients',
+      recordId: client.id,
+      newValues: { name: client.name, nit_cc: client.nit_cc, type: client.type },
+      description: `Creó el cliente "${client.name}" (NIT/CC: ${client.nit_cc || 'N/A'})`,
+      req
+    }).catch(() => {});
+
     res.status(201).json({
       success: true,
       message: 'Cliente creado exitosamente.',
@@ -155,7 +166,6 @@ const update = async (req, res, next) => {
       }
     }
 
-    // Actualizar solo los campos proporcionados
     const allowedFields = ['name', 'email', 'phone', 'address', 'city', 'nit_cc', 'type', 'notes', 'isActive'];
     const updateData = {};
 
@@ -165,7 +175,23 @@ const update = async (req, res, next) => {
       }
     });
 
+    const previousValues = {};
+    Object.keys(updateData).forEach((key) => {
+      previousValues[key] = client[key];
+    });
+
     await client.update(updateData);
+
+    logAudit({
+      userId: req.user.id,
+      action: 'actualizar',
+      tableName: 'clients',
+      recordId: client.id,
+      previousValues,
+      newValues: updateData,
+      description: `Actualizó el cliente "${client.name}"`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,
@@ -190,8 +216,17 @@ const remove = async (req, res, next) => {
       });
     }
 
-    // Eliminación lógica: marcar como inactivo
     await client.update({ isActive: false });
+
+    logAudit({
+      userId: req.user.id,
+      action: 'eliminar',
+      tableName: 'clients',
+      recordId: client.id,
+      previousValues: { name: client.name, nit_cc: client.nit_cc },
+      description: `Eliminó el cliente "${client.name}" (NIT/CC: ${client.nit_cc || 'N/A'})`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,

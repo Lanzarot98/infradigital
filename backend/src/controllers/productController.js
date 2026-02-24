@@ -6,6 +6,7 @@
 const { Op } = require('sequelize');
 const { sequelize, Product, InventoryMovement, InvoiceItem } = require('../models');
 const { paginationHelper } = require('../utils/helpers');
+const { logAudit } = require('../utils/auditLogger');
 
 // ── Listar todos los productos con filtros ───────────────────────────────────
 const getAll = async (req, res, next) => {
@@ -129,6 +130,16 @@ const create = async (req, res, next) => {
       });
     }
 
+    logAudit({
+      userId: req.user.id,
+      action: 'crear',
+      tableName: 'products',
+      recordId: product.id,
+      newValues: { name: product.name, sku: product.sku, price: product.price, stock: product.stock },
+      description: `Creó el producto "${product.name}" (SKU: ${product.sku || 'N/A'})`,
+      req
+    }).catch(() => {});
+
     res.status(201).json({
       success: true,
       message: 'Producto creado exitosamente.',
@@ -152,7 +163,6 @@ const update = async (req, res, next) => {
       });
     }
 
-    // Actualizar solo los campos proporcionados
     const allowedFields = ['name', 'description', 'sku', 'price', 'cost', 'minStock', 'category', 'unit', 'isActive'];
     const updateData = {};
 
@@ -162,7 +172,23 @@ const update = async (req, res, next) => {
       }
     });
 
+    const previousValues = {};
+    Object.keys(updateData).forEach((key) => {
+      previousValues[key] = product[key];
+    });
+
     await product.update(updateData);
+
+    logAudit({
+      userId: req.user.id,
+      action: 'actualizar',
+      tableName: 'products',
+      recordId: product.id,
+      previousValues,
+      newValues: updateData,
+      description: `Actualizó el producto "${product.name}"`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,
@@ -187,8 +213,17 @@ const remove = async (req, res, next) => {
       });
     }
 
-    // Eliminación lógica: marcar como inactivo
     await product.update({ isActive: false });
+
+    logAudit({
+      userId: req.user.id,
+      action: 'eliminar',
+      tableName: 'products',
+      recordId: product.id,
+      previousValues: { name: product.name, sku: product.sku },
+      description: `Eliminó el producto "${product.name}" (SKU: ${product.sku || 'N/A'})`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,
@@ -268,6 +303,17 @@ const adjustStock = async (req, res, next) => {
 
     // Actualizar el stock del producto
     await product.update({ stock: newStock });
+
+    logAudit({
+      userId: req.user.id,
+      action: 'ajustar_stock',
+      tableName: 'products',
+      recordId: product.id,
+      previousValues: { stock: previousStock },
+      newValues: { stock: newStock, type, quantity },
+      description: `Ajustó stock de "${product.name}": ${type} de ${quantity} unidades (${previousStock} → ${newStock}). Razón: ${reason || 'N/A'}`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,

@@ -5,6 +5,7 @@
 
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { logAudit } = require('../utils/auditLogger');
 
 /**
  * Genera un token JWT para el usuario proporcionado.
@@ -51,7 +52,16 @@ const register = async (req, res, next) => {
     // Generar token JWT
     const token = generateToken(user);
 
-    // Responder con el usuario creado (sin contraseña) y el token
+    logAudit({
+      userId: user.id,
+      action: 'crear',
+      tableName: 'users',
+      recordId: user.id,
+      newValues: { name: user.name, email: user.email, role: user.role },
+      description: `Registró la cuenta de usuario "${user.name}" (${user.email})`,
+      req
+    }).catch(() => {});
+
     res.status(201).json({
       success: true,
       message: 'Usuario registrado exitosamente.',
@@ -108,6 +118,15 @@ const login = async (req, res, next) => {
 
     // Generar token JWT
     const token = generateToken(user);
+
+    logAudit({
+      userId: user.id,
+      action: 'iniciar_sesion',
+      tableName: 'users',
+      recordId: user.id,
+      description: `Inició sesión el usuario "${user.name}" (${user.email})`,
+      req
+    }).catch(() => {});
 
     res.json({
       success: true,
