@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InfraDigital — Demo Interactiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1e40af;--primary-light:#3b82f6;--primary-50:#eff6ff;--primary-100:#dbeafe;
+  --sidebar-bg:#1e293b;--sidebar-hover:#334155;--sidebar-active:#1e40af;
+  --bg:#f0f4f8;--bg-card:#ffffff;--border:#e2e8f0;--border-light:#f1f5f9;
+  --text:#0f172a;--text-secondary:#64748b;--text-light:#94a3b8;
+  --success:#16a34a;--success-bg:#dcfce7;--success-border:#bbf7d0;
+  --warning:#d97706;--warning-bg:#fef3c7;--warning-border:#fde68a;
+  --danger:#dc2626;--danger-bg:#fee2e2;--danger-border:#fecaca;
+  --info:#2563eb;--info-bg:#dbeafe;--info-border:#bfdbfe;
+  --radius:8px;--radius-lg:12px;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg:0 4px 24px rgba(0,0,0,.12);
+}
+html{font-size:14px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,select{font-family:inherit;outline:none}
+table{width:100%;border-collapse:collapse}
+
+/* ==================== LOGIN ==================== */
+#page-login{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 30%,#3b82f6 70%,#60a5fa 100%);
+  position:relative;overflow:hidden;
+}
+#page-login::before{
+  content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+  background:rgba(255,255,255,.04);top:-200px;right:-150px;
+}
+#page-login::after{
+  content:'';position:absolute;width:400px;height:400px;border-radius:50%;
+  background:rgba(255,255,255,.03);bottom:-100px;left:-100px;
+}
+.login-card{
+  background:#fff;border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;z-index:1;
+  animation:fadeUp .5s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{text-align:center;margin-bottom:2rem}
+.login-logo-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:56px;height:56px;border-radius:var(--radius-lg);
+  background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;
+  font-size:1.5rem;font-weight:700;margin-bottom:.75rem;
+}
+.login-logo h1{font-size:1.5rem;font-weight:700;color:var(--text)}
+.login-logo p{font-size:.85rem;color:var(--text-secondary);margin-top:.25rem}
+.form-group{margin-bottom:1.25rem}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.03em}
+.form-group input{
+  width:100%;padding:.7rem .85rem;border:1px solid var(--border);border-radius:var(--radius);
+  font-size:.9rem;transition:border-color .2s,box-shadow .2s;background:#fff;
+}
+.form-group input:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.btn-primary{
+  width:100%;padding:.75rem;border-radius:var(--radius);
+  background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;
+  font-size:.95rem;font-weight:600;transition:transform .15s,box-shadow .15s;
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(30,64,175,.35)}
+.btn-primary:active{transform:translateY(0)}
+.demo-credentials{
+  margin-top:1.5rem;padding:1rem;background:var(--primary-50);
+  border-radius:var(--radius);border:1px solid var(--primary-100);text-align:center;
+}
+.demo-credentials p{font-size:.8rem;color:var(--primary);font-weight:500}
+.demo-credentials code{font-weight:700;font-size:.82rem}
+
+/* ==================== APP LAYOUT ==================== */
+#page-app{display:none;min-height:100vh}
+.app-layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+  width:260px;background:var(--sidebar-bg);color:#fff;display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s;
+}
+.sidebar-brand{padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand-icon{
+  width:36px;height:36px;border-radius:var(--radius);
+  background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;
+}
+.sidebar-brand-icon svg{width:20px;height:20px;fill:#fff}
+.sidebar-brand span{font-size:1.1rem;font-weight:700;letter-spacing:-.02em}
+.sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;
+  color:rgba(255,255,255,.65);font-size:.875rem;font-weight:500;
+  transition:all .15s;cursor:pointer;border-left:3px solid transparent;
+}
+.nav-item:hover{color:#fff;background:var(--sidebar-hover)}
+.nav-item.active{color:#fff;background:rgba(59,130,246,.18);border-left-color:var(--primary-light)}
+.nav-item svg{width:20px;height:20px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-user{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.sidebar-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;color:#fff;
+}
+.sidebar-user-info{flex:1;min-width:0}
+.sidebar-user-info p{font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-info span{font-size:.72rem;color:rgba(255,255,255,.5)}
+.btn-logout{
+  width:100%;padding:.55rem;border-radius:var(--radius);font-size:.8rem;font-weight:500;
+  color:rgba(255,255,255,.6);background:rgba(255,255,255,.06);transition:all .15s;
+}
+.btn-logout:hover{background:rgba(220,38,38,.2);color:#fca5a5}
+
+/* Main content */
+.main-content{margin-left:260px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+  background:#fff;border-bottom:1px solid var(--border);padding:.85rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:40;
+}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.topbar-left h2{font-size:1.15rem;font-weight:700;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.status-badge{
+  display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .7rem;
+  border-radius:20px;font-size:.75rem;font-weight:600;
+  background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-user{font-size:.85rem;font-weight:500;color:var(--text-secondary)}
+.content-area{flex:1;padding:1.75rem 2rem 2rem}
+
+/* ==================== SHARED COMPONENTS ==================== */
+.page-section{display:none;animation:fadeIn .3s ease}
+.page-section.active{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.75rem}
+.stat-card{
+  background:#fff;border-radius:var(--radius-lg);padding:1.25rem 1.5rem;
+  border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:1rem;
+  transition:transform .15s,box-shadow .15s;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-icon{
+  width:44px;height:44px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:1.1rem;
+}
+.stat-icon.blue{background:var(--info-bg);color:var(--info)}
+.stat-icon.green{background:var(--success-bg);color:var(--success)}
+.stat-icon.yellow{background:var(--warning-bg);color:var(--warning)}
+.stat-icon.red{background:var(--danger-bg);color:var(--danger)}
+.stat-icon.purple{background:#f3e8ff;color:#7c3aed}
+.stat-info h4{font-size:.75rem;color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:.03em;margin-bottom:.3rem}
+.stat-info p{font-size:1.35rem;font-weight:700;color:var(--text)}
+
+.card{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.card-header h3{font-size:1rem;font-weight:700;color:var(--text)}
+.card-body{padding:0}
+
+.table-wrapper{overflow-x:auto}
+table th{
+  padding:.75rem 1rem;text-align:left;font-size:.72rem;font-weight:600;
+  color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;
+  background:var(--border-light);border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+table td{
+  padding:.7rem 1rem;font-size:.85rem;color:var(--text);border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+table tbody tr{transition:background .1s}
+table tbody tr:hover{background:var(--primary-50)}
+table tbody tr:last-child td{border-bottom:none}
+
+.badge{
+  display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:20px;
+  font-size:.72rem;font-weight:600;white-space:nowrap;
+}
+.badge-success{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border)}
+.badge-warning{background:var(--warning-bg);color:var(--warning);border:1px solid var(--warning-border)}
+.badge-danger{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
+.badge-info{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
+.badge-purple{background:#f3e8ff;color:#7c3aed;border:1px solid #e9d5ff}
+
+.toolbar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.search-box{
+  flex:1;min-width:200px;padding:.6rem 1rem .6rem 2.25rem;border:1px solid var(--border);
+  border-radius:var(--radius);font-size:.85rem;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 10-1.397 1.398h-.001l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 110-10 5 5 0 010 10z'/%3E%3C/svg%3E") no-repeat .75rem center;
+  transition:border-color .2s,box-shadow .2s;
+}
+.search-box:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.filter-select{
+  padding:.6rem .75rem;border:1px solid var(--border);border-radius:var(--radius);
+  font-size:.85rem;background:#fff;color:var(--text);min-width:160px;
+}
+
+.action-btn{
+  width:30px;height:30px;border-radius:6px;display:inline-flex;
+  align-items:center;justify-content:center;transition:all .15s;font-size:.8rem;
+}
+.action-btn.green{background:var(--success-bg);color:var(--success)}
+.action-btn.green:hover{background:var(--success);color:#fff}
+.action-btn.blue{background:var(--info-bg);color:var(--info)}
+.action-btn.blue:hover{background:var(--info);color:#fff}
+.action-btn.red{background:var(--danger-bg);color:var(--danger)}
+.action-btn.red:hover{background:var(--danger);color:#fff}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.75rem}
+.chart-card{background:#fff;border-radius:var(--radius-lg);padding:1.5rem;border:1px solid var(--border);box-shadow:var(--shadow)}
+.chart-card h3{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:1rem}
+.chart-container{position:relative;height:260px}
+
+/* Permissions matrix */
+.permissions-section{margin-top:1.75rem}
+.permissions-section h3{font-size:1rem;font-weight:700;margin-bottom:1rem}
+.permissions-table th,.permissions-table td{text-align:center;padding:.6rem .75rem}
+.permissions-table th:first-child,.permissions-table td:first-child{text-align:left}
+.perm-check{width:18px;height:18px;accent-color:var(--primary-light);cursor:default}
+
+/* ==================== RESPONSIVE ==================== */
+@media(max-width:1024px){
+  .charts-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .topbar{padding:.75rem 1rem}
+  .content-area{padding:1.25rem 1rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .hamburger{display:flex!important}
+}
+.hamburger{
+  display:none;align-items:center;justify-content:center;width:36px;height:36px;
+  border-radius:var(--radius);background:transparent;color:var(--text);font-size:1.25rem;
+}
+.hamburger:hover{background:var(--border-light)}
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:45;
+}
+.overlay.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="page-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">ID</div>
+      <h1>InfraDigital</h1>
+      <p>Plataforma de Gestión Empresarial</p>
+    </div>
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" id="loginEmail" value="admin@infradigital.co" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="loginPass" value="admin123" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn-primary">Iniciar Sesión</button>
+    </form>
+    <div class="demo-credentials">
+      <p>Credenciales de demostración:</p>
+      <p><code>admin@infradigital.co</code> / <code>admin123</code></p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div id="page-app">
+  <div class="app-layout">
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+        </div>
+        <span>InfraDigital</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item" data-page="inventario" onclick="navigateTo('inventario')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          Inventario
+        </div>
+        <div class="nav-item" data-page="facturacion" onclick="navigateTo('facturacion')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+          Facturación
+        </div>
+        <div class="nav-item" data-page="clientes" onclick="navigateTo('clientes')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Clientes
+        </div>
+        <div class="nav-item" data-page="auditoria" onclick="navigateTo('auditoria')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Auditoría
+        </div>
+        <div class="nav-item" data-page="usuarios" onclick="navigateTo('usuarios')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Usuarios
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">AR</div>
+          <div class="sidebar-user-info">
+            <p>Admin InfraDigital</p>
+            <span>Administrador</span>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="handleLogout()">
+          ← Cerrar sesión
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" onclick="toggleSidebar()">☰</button>
+          <h2 id="topbar-title">Dashboard</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="status-badge"><span class="status-dot"></span> En línea</div>
+          <span class="topbar-user">Administrador InfraDigital</span>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- ========== DASHBOARD ========== -->
+        <section class="page-section active" id="sec-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">📦</div>
+              <div class="stat-info"><h4>Total Productos</h4><p>19</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">👥</div>
+              <div class="stat-info"><h4>Total Clientes</h4><p>10</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon yellow">📋</div>
+              <div class="stat-info"><h4>Facturas Pendientes</h4><p>3</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">💰</div>
+              <div class="stat-info"><h4>Ingresos Totales</h4><p>$1.202.019</p></div>
+            </div>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3>Tendencia de Ventas (Últimos 30 días)</h3>
+              <div class="chart-container"><canvas id="chartVentas"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h3>Ingresos por Método de Pago</h3>
+              <div class="chart-container"><canvas id="chartPagos"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Facturas Recientes</h3></div>
+            <div class="card-body table-wrapper">
+              <table>
+                <thead><tr><th>Nro. Factura</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr><td>FE-2026-0010</td><td>Panadería El Trigal S.A.S.</td><td>07/03/2026</td><td>$285.600</td><td><span class="badge badge-success">Pagada</span></td></tr>
+                  <tr><td>FE-2026-0009</td><td>María Fernanda López</td><td>06/03/2026</td><td>$142.800</td><td><span class="badge badge-warning">Pendiente</span></td></tr>
+                  <tr><td>FE-2026-0008</td><td>Restaurante Sabor Criollo</td><td>05/03/2026</td><td>$476.000</td><td><span class="badge badge-success">Pagada</span></td></tr>
+                  <tr><td>FE-2026-0007</td><td>Carlos Andrés Martínez</td><td>04/03/2026</td><td>$89.250</td><td><span class="badge badge-warning">Pendiente</span></td></tr>
+                  <tr><td>FE-2026-0006</td><td>Tienda Doña Rosa</td><td>03/03/2026</td><td>$208.369</td><td><span class="badge badge-success">Pagada</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== INVENTARIO ========== -->
+        <section class="page-section" id="sec-inventario">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">📦</div>
+              <div class="stat-info"><h4>Total Productos</h4><p>19</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon red">⚠️</div>
+              <div class="stat-info"><h4>Bajo Stock</h4><p>3</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">💲</div>
+              <div class="stat-info"><h4>Valor Inventario</h4><p>$2.401.400</p></div>
+            </div>
+          </div>
+          <div class="toolbar">
+            <input class="search-box" type="text" placeholder="Buscar producto por nombre o SKU..." id="invSearch" oninput="filterInventory()">
+            <select class="filter-select" id="invCategory" onchange="filterInventory()">
+              <option value="">Todas las categorías</option>
+              <option value="Alimentos">Alimentos</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Aseo">Aseo</option>
+              <option value="Lácteos">Lácteos</option>
+              <option value="Snacks">Snacks</option>
+            </select>
+          </div>
+          <div class="card">
+            <div class="card-body table-wrapper">
+              <table>
+                <thead><tr><th>SKU</th><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Stock Mín.</th><th>Precio</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="invTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== FACTURACIÓN ========== -->
+        <section class="page-section" id="sec-facturacion">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">📄</div>
+              <div class="stat-info"><h4>Total Facturas</h4><p>10</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">✅</div>
+              <div class="stat-info"><h4>Pagadas</h4><p>7</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon yellow">⏳</div>
+              <div class="stat-info"><h4>Pendientes</h4><p>3</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">💰</div>
+              <div class="stat-info"><h4>Ingresos</h4><p>$1.202.019</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Listado de Facturas</h3></div>
+            <div class="card-body table-wrapper">
+              <table>
+                <thead><tr><th>Nro. Factura</th><th>Cliente</th><th>Fecha</th><th>Subtotal</th><th>IVA (19%)</th><th>Total</th><th>Estado</th></tr></thead>
+                <tbody id="facTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== CLIENTES ========== -->
+        <section class="page-section" id="sec-clientes">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">👥</div>
+              <div class="stat-info"><h4>Total Clientes</h4><p>10</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">👤</div>
+              <div class="stat-info"><h4>Persona Natural</h4><p>5</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">🏢</div>
+              <div class="stat-info"><h4>Persona Jurídica</h4><p>5</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Listado de Clientes</h3></div>
+            <div class="card-body table-wrapper">
+              <table>
+                <thead><tr><th>Nombre</th><th>Email</th><th>Teléfono</th><th>NIT / CC</th><th>Ciudad</th><th>Tipo</th></tr></thead>
+                <tbody id="cliTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== AUDITORÍA ========== -->
+        <section class="page-section" id="sec-auditoria">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">🔍</div>
+              <div class="stat-info"><h4>Total Acciones</h4><p>25</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">📅</div>
+              <div class="stat-info"><h4>Acciones Hoy</h4><p>5</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">👤</div>
+              <div class="stat-info"><h4>Usuarios Activos</h4><p>2</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Registro de Auditoría</h3></div>
+            <div class="card-body table-wrapper">
+              <table>
+                <thead><tr><th>Fecha y Hora</th><th>Usuario</th><th>Acción</th><th>Módulo</th><th>Descripción</th><th>IP</th></tr></thead>
+                <tbody id="audTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== USUARIOS ========== -->
+        <section class="page-section" id="sec-usuarios">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">👥</div>
+              <div class="stat-info"><h4>Total Usuarios</h4><p>2</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">🛡️</div>
+              <div class="stat-info"><h4>Administradores</h4><p>1</p></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">👤</div>
+              <div class="stat-info"><h4>Usuarios</h4><p>1</p></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:1.75rem">
+            <div class="card-header"><h3>Gestión de Usuarios</h3></div>
+            <div class="card-body table-wrapper">
+              <table>
+                <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Último Acceso</th><th>Acciones</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Luis Rojas</strong></td><td>admin@infradigital.co</td>
+                    <td><span class="badge badge-purple">Administrador</span></td>
+                    <td><span class="badge badge-success">Activo</span></td>
+                    <td>07/03/2026 09:15</td>
+                    <td><button class="action-btn blue" title="Editar">✎</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ana María Gómez</strong></td><td>ana.gomez@infradigital.co</td>
+                    <td><span class="badge badge-info">Usuario</span></td>
+                    <td><span class="badge badge-success">Activo</span></td>
+                    <td>06/03/2026 16:42</td>
+                    <td><button class="action-btn blue" title="Editar">✎</button> <button class="action-btn red" title="Eliminar">✕</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card permissions-section">
+            <div class="card-header"><h3>Matriz de Permisos por Rol</h3></div>
+            <div class="card-body table-wrapper">
+              <table class="permissions-table">
+                <thead>
+                  <tr><th>Módulo</th><th>Admin — Ver</th><th>Admin — Crear</th><th>Admin — Editar</th><th>Admin — Eliminar</th><th>Usuario — Ver</th><th>Usuario — Crear</th><th>Usuario — Editar</th><th>Usuario — Eliminar</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Dashboard</td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td></tr>
+                  <tr><td>Inventario</td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td></tr>
+                  <tr><td>Facturación</td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td></tr>
+                  <tr><td>Clientes</td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td></tr>
+                  <tr><td>Auditoría</td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td></tr>
+                  <tr><td>Usuarios</td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" checked disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td><td><input type="checkbox" class="perm-check" disabled></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- content-area -->
+    </main>
+  </div><!-- app-layout -->
+</div><!-- page-app -->
+
+<script>
+/* ==================== UTILITIES ==================== */
+function fmtCOP(n){return '$'+n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
+
+/* ==================== SAMPLE DATA ==================== */
+const products = [
+  {sku:'PRD-001',name:'Arroz Diana 500g',cat:'Alimentos',stock:45,min:10,price:3200,cost:2400,status:'active'},
+  {sku:'PRD-002',name:'Café Sello Rojo 500g',cat:'Bebidas',stock:30,min:8,price:14500,cost:10800,status:'active'},
+  {sku:'PRD-003',name:'Panela Redonda 1kg',cat:'Alimentos',stock:60,min:15,price:4800,cost:3200,status:'active'},
+  {sku:'PRD-004',name:'Aceite Girasol 1L',cat:'Alimentos',stock:25,min:10,price:12900,cost:9500,status:'active'},
+  {sku:'PRD-005',name:'Leche Entera Alquería 1L',cat:'Lácteos',stock:5,min:20,price:4200,cost:3100,status:'low'},
+  {sku:'PRD-006',name:'Jabón Rey Barra',cat:'Aseo',stock:80,min:20,price:2800,cost:1900,status:'active'},
+  {sku:'PRD-007',name:'Chocolate Corona 500g',cat:'Bebidas',stock:3,min:10,price:9800,cost:7200,status:'low'},
+  {sku:'PRD-008',name:'Harina de Trigo 1kg',cat:'Alimentos',stock:35,min:12,price:5600,cost:4000,status:'active'},
+  {sku:'PRD-009',name:'Galletas Festival 12pk',cat:'Snacks',stock:50,min:15,price:6500,cost:4800,status:'active'},
+  {sku:'PRD-010',name:'Detergente Fab 1kg',cat:'Aseo',stock:2,min:8,price:11200,cost:8500,status:'low'},
+];
+
+const invoices = [
+  {num:'FE-2026-0010',client:'Panadería El Trigal S.A.S.',date:'07/03/2026',subtotal:240000,status:'pagada'},
+  {num:'FE-2026-0009',client:'María Fernanda López',date:'06/03/2026',subtotal:120000,status:'pendiente'},
+  {num:'FE-2026-0008',client:'Restaurante Sabor Criollo',date:'05/03/2026',subtotal:400000,status:'pagada'},
+  {num:'FE-2026-0007',client:'Carlos Andrés Martínez',date:'04/03/2026',subtotal:75000,status:'pendiente'},
+  {num:'FE-2026-0006',client:'Tienda Doña Rosa',date:'03/03/2026',subtotal:175100,status:'pagada'},
+  {num:'FE-2026-0005',client:'Distribuidora Andina Ltda.',date:'02/03/2026',subtotal:62500,status:'pagada'},
+  {num:'FE-2026-0004',client:'Andrea Catalina Ruiz',date:'01/03/2026',subtotal:34500,status:'pagada'},
+  {num:'FE-2026-0003',client:'Minimercado La Esquina',date:'28/02/2026',subtotal:98000,status:'pendiente'},
+  {num:'FE-2026-0002',client:'Juan Esteban Herrera',date:'27/02/2026',subtotal:45200,status:'pagada'},
+  {num:'FE-2026-0001',client:'Finca La Esperanza S.A.S.',date:'26/02/2026',subtotal:120000,status:'pagada'},
+];
+
+const clients = [
+  {name:'María Fernanda López',email:'maria.lopez@gmail.com',phone:'310-456-7890',nit:'52.345.678',city:'Bogotá',type:'Natural'},
+  {name:'Carlos Andrés Martínez',email:'carlos.martinez@hotmail.com',phone:'315-234-5678',nit:'79.876.543',city:'Medellín',type:'Natural'},
+  {name:'Andrea Catalina Ruiz',email:'andrea.ruiz@outlook.com',phone:'300-123-4567',nit:'1.023.456.789',city:'Cali',type:'Natural'},
+  {name:'Juan Esteban Herrera',email:'juan.herrera@gmail.com',phone:'312-987-6543',nit:'80.123.456',city:'Barranquilla',type:'Natural'},
+  {name:'Lucía del Carmen Vargas',email:'lucia.vargas@yahoo.com',phone:'318-765-4321',nit:'41.567.890',city:'Bucaramanga',type:'Natural'},
+  {name:'Panadería El Trigal S.A.S.',email:'info@eltrigal.com.co',phone:'601-234-5678',nit:'900.123.456-7',city:'Bogotá',type:'Jurídica'},
+  {name:'Restaurante Sabor Criollo',email:'contacto@saborcriollo.co',phone:'604-567-8901',nit:'900.234.567-1',city:'Medellín',type:'Jurídica'},
+  {name:'Tienda Doña Rosa',email:'tienda@donarosa.com',phone:'602-345-6789',nit:'900.345.678-2',city:'Cali',type:'Jurídica'},
+  {name:'Distribuidora Andina Ltda.',email:'ventas@andina.com.co',phone:'607-456-7890',nit:'800.456.789-3',city:'Bucaramanga',type:'Jurídica'},
+  {name:'Minimercado La Esquina',email:'admin@laesquina.co',phone:'605-678-9012',nit:'900.567.890-4',city:'Cartagena',type:'Jurídica'},
+];
+
+const auditLog = [
+  {dt:'07/03/2026 09:15:22',user:'Luis Rojas',action:'crear',module:'Facturación',desc:'Creó factura FE-2026-0010 para Panadería El Trigal S.A.S.',ip:'192.168.1.10'},
+  {dt:'07/03/2026 09:02:45',user:'Luis Rojas',action:'actualizar',module:'Inventario',desc:'Actualizó stock de Arroz Diana 500g (+20 unidades)',ip:'192.168.1.10'},
+  {dt:'07/03/2026 08:48:11',user:'Ana María Gómez',action:'crear',module:'Clientes',desc:'Registró nuevo cliente Lucía del Carmen Vargas',ip:'192.168.1.15'},
+  {dt:'07/03/2026 08:30:05',user:'Luis Rojas',action:'actualizar',module:'Facturación',desc:'Cambió estado de FE-2026-0006 a Pagada',ip:'192.168.1.10'},
+  {dt:'07/03/2026 08:15:33',user:'Ana María Gómez',action:'crear',module:'Inventario',desc:'Registró producto Detergente Fab 1kg',ip:'192.168.1.15'},
+  {dt:'06/03/2026 17:22:10',user:'Luis Rojas',action:'eliminar',module:'Inventario',desc:'Eliminó producto Gaseosa Postobón 350ml (descontinuado)',ip:'192.168.1.10'},
+  {dt:'06/03/2026 14:55:38',user:'Ana María Gómez',action:'actualizar',module:'Clientes',desc:'Actualizó datos de contacto de Distribuidora Andina Ltda.',ip:'192.168.1.15'},
+  {dt:'06/03/2026 10:12:04',user:'Luis Rojas',action:'crear',module:'Facturación',desc:'Creó factura FE-2026-0009 para María Fernanda López',ip:'192.168.1.10'},
+];
+
+/* ==================== AUTH ==================== */
+function handleLogin(e){
+  e.preventDefault();
+  document.getElementById('page-login').style.display='none';
+  document.getElementById('page-app').style.display='block';
+  initCharts();
+  return false;
+}
+function handleLogout(){
+  document.getElementById('page-app').style.display='none';
+  document.getElementById('page-login').style.display='flex';
+  destroyCharts();
+}
+
+/* ==================== NAVIGATION ==================== */
+const pageTitles={dashboard:'Dashboard',inventario:'Inventario',facturacion:'Facturación',clientes:'Clientes',auditoria:'Auditoría',usuarios:'Usuarios'};
+
+function navigateTo(page){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active',n.dataset.page===page);
+  });
+  document.getElementById('topbar-title').textContent=pageTitles[page]||page;
+  if(window.innerWidth<769){
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+  }
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+/* ==================== RENDER TABLES ==================== */
+function renderInventory(data){
+  const tbody=document.getElementById('invTableBody');
+  tbody.innerHTML=data.map(p=>{
+    const stockClass=p.status==='low'?'badge-danger':'badge-success';
+    const stockLabel=p.status==='low'?'Bajo':'Normal';
+    return `<tr>
+      <td>${p.sku}</td><td><strong>${p.name}</strong></td><td>${p.cat}</td>
+      <td><span class="badge ${p.stock<=p.min?'badge-danger':'badge-success'}">${p.stock}</span></td>
+      <td>${p.min}</td><td>${fmtCOP(p.price)}</td><td>${fmtCOP(p.cost)}</td>
+      <td><span class="badge ${stockClass}">${stockLabel}</span></td>
+      <td>
+        <button class="action-btn green" title="Ver">👁</button>
+        <button class="action-btn blue" title="Editar">✎</button>
+        <button class="action-btn red" title="Eliminar">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterInventory(){
+  const q=document.getElementById('invSearch').value.toLowerCase();
+  const cat=document.getElementById('invCategory').value;
+  const filtered=products.filter(p=>{
+    const matchQ=!q||p.name.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q);
+    const matchCat=!cat||p.cat===cat;
+    return matchQ&&matchCat;
+  });
+  renderInventory(filtered);
+}
+
+function renderInvoices(){
+  document.getElementById('facTableBody').innerHTML=invoices.map(i=>{
+    const iva=Math.round(i.subtotal*0.19);
+    const total=i.subtotal+iva;
+    const cls=i.status==='pagada'?'badge-success':'badge-warning';
+    const label=i.status==='pagada'?'Pagada':'Pendiente';
+    return `<tr><td>${i.num}</td><td>${i.client}</td><td>${i.date}</td><td>${fmtCOP(i.subtotal)}</td><td>${fmtCOP(iva)}</td><td><strong>${fmtCOP(total)}</strong></td><td><span class="badge ${cls}">${label}</span></td></tr>`;
+  }).join('');
+}
+
+function renderClients(){
+  document.getElementById('cliTableBody').innerHTML=clients.map(c=>{
+    const cls=c.type==='Natural'?'badge-info':'badge-purple';
+    const label=c.type==='Natural'?'Persona Natural':'Persona Jurídica';
+    return `<tr><td><strong>${c.name}</strong></td><td>${c.email}</td><td>${c.phone}</td><td>${c.nit}</td><td>${c.city}</td><td><span class="badge ${cls}">${label}</span></td></tr>`;
+  }).join('');
+}
+
+function renderAudit(){
+  document.getElementById('audTableBody').innerHTML=auditLog.map(a=>{
+    const map={crear:'badge-success',actualizar:'badge-info',eliminar:'badge-danger'};
+    const labels={crear:'Crear',actualizar:'Actualizar',eliminar:'Eliminar'};
+    return `<tr><td>${a.dt}</td><td>${a.user}</td><td><span class="badge ${map[a.action]}">${labels[a.action]}</span></td><td>${a.module}</td><td>${a.desc}</td><td>${a.ip}</td></tr>`;
+  }).join('');
+}
+
+/* ==================== CHARTS ==================== */
+let chartVentas=null,chartPagos=null;
+
+function destroyCharts(){
+  if(chartVentas){chartVentas.destroy();chartVentas=null}
+  if(chartPagos){chartPagos.destroy();chartPagos=null}
+}
+
+function initCharts(){
+  destroyCharts();
+
+  const labels=[];const dataV=[];
+  const today=new Date(2026,2,7);
+  for(let i=29;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    labels.push(d.getDate()+'/'+(d.getMonth()+1));
+    dataV.push(Math.floor(Math.random()*180000)+40000);
+  }
+
+  const ctxV=document.getElementById('chartVentas').getContext('2d');
+  chartVentas=new Chart(ctxV,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Ventas (COP)',data:dataV,
+        borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.08)',
+        fill:true,tension:.4,pointRadius:0,pointHoverRadius:5,borderWidth:2.5,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'  '+fmtCOP(ctx.raw)}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:10}},
+        y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},callback:v=>fmtCOP(v)},beginAtZero:true}
+      }
+    }
+  });
+
+  const ctxP=document.getElementById('chartPagos').getContext('2d');
+  chartPagos=new Chart(ctxP,{
+    type:'doughnut',
+    data:{
+      labels:['Efectivo','Tarjeta','Transferencia'],
+      datasets:[{
+        data:[45,30,25],
+        backgroundColor:['#3b82f6','#8b5cf6','#06b6d4'],
+        borderWidth:0,hoverOffset:8,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{
+        legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyle:'circle',font:{size:12}}},
+        tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.raw+'%'}}
+      }
+    }
+  });
+}
+
+/* ==================== INIT ==================== */
+renderInventory(products);
+renderInvoices();
+renderClients();
+renderAudit();
+</script>
+</body>
+</html>
